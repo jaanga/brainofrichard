@@ -79,6 +79,7 @@
 	var plane, boundary, axis, box;	
 	var gui;
 	var objConfig = {
+		updateCamera: true,
 		opacityDefault: 0.02,
 		opacityHighlight: 0.8,
 		scansStart: 1,
@@ -109,7 +110,7 @@
 				startZ: 0,
 				deltaY: 5,
 				deltaZ: 0,
-				opacityDefault: 0.3,
+				opacityDefault: 0.2,
 				meshY: -50
 			}	
 		}		
@@ -205,7 +206,7 @@
 		
 		var tim = clock.elapsedTime;
 		
-		if (!mouseMove && !playingDemo) {
+		if (!mouseMove && !playingDemo && objConfig.updateCamera) {
 		// console.log(tim);
 			camera.position.x += -1 * Math.cos( tim * 0.15);
 			camera.position.z += -1 * Math.sin( tim * 0.15);	
@@ -236,6 +237,15 @@
 		}
 		
 		gui = new dat.GUI( { height: 14 * 32 - 1});
+		
+		gui.add( objConfig, 'updateCamera', true ).onChange( function() {
+			if ( !objConfig.updateCamera) {
+				objConfig.updateCamera = false;
+			} else {
+				objConfig.updateCamera = true;	
+			}			
+		} );
+		
 		gui.add( objConfig, 'opacityDefault', 0.01, 1 ).step(0.01).onChange( function() {
 			for (var i = 0, l = scans.length; i < l; i++) {
 				scans[i].material.opacity = ( objConfig.opacityDefault );
