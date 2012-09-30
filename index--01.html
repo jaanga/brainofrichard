@@ -40,6 +40,11 @@
 	' ~ <a id="c3" href="JavaScript:controls.target.set(0,0,0);camera.position.set(200, 0, 0);">Side<\/a>' +
 	'<br><a href="#" onClick="showSplash();">About<\/a>';
 
+	var replay_is_on = false;
+	var replayCharOn = "&#9658;";
+	var replayCharOff = "&#9632;";
+	var replayChar = replayCharOn;
+
 	var splash = document.createElement( 'div' );
 	document.body.appendChild( splash );
 	splash.style.backgroundColor = '#ddd';
@@ -53,77 +58,56 @@
 	splash.style.top = '10%';
 	splash.style.width = '300px';
 	var splashText = '<h2 style="text-align:right;"><a href="#" onClick="hideSplash()" style="color:#888;text-decoration:none;">[X]<\/a><\/h2>' +
-	'<h1>The Brain of Richard App<\/h1>' +
-	'<p>3D compilations of hundreds of 2D scanned MRI images<\/p>' +
-	'<p>Built by Richard and Theo<\/p>' +
-	'<h2>~<\/h2>' +
-	'<p>Launch the demo...<\/p>';
+	'<h1>The Brain of Richard App<\/h1><p>3D compilations of hundreds of 2D scanned MRI images.<\/p><h2>~<\/h2>' +
+	'<p>To launch the demo,<\/p><p>click this play button: <\/p>';
+	// splash.innerHTML = splashText + '<h1><a href="#" id="replay" onClick="playSound();" style="text-decoration:none;">' + replayChar + '<\/h1>';
+	
 	splash.innerHTML = splashText;
-
+	
 	var audioElement = document.createElement('audio');
+	var whichApp = function(){};
+	
 	splash.appendChild( audioElement );
-	audioElement.setAttribute('src', 'brainOfRichard.mp3');
+	audioElement.setAttribute('src', 'foreverautumn.mp3');
 	audioElement.controls = 'true';
-
-	var playingDemo = false;
-	var whichApp = function(){ return;};
-
-	audioElement.addEventListener("click", function() {
-		if ( playingDemo ) {playingDemo = false;}
-// console.log('click', playingDemo, audioElement.currentTime, audioElement.paused, new Date());
+	
+	audioElement.addEventListener("timeupdate", function() {
+// console.log('time', whichApp);
+		var duration = document.getElementById('duration');
+		var s = parseInt(audioElement.currentTime % 60);
+		var m = parseInt((audioElement.currentTime / 60) % 60);
+		duration.innerHTML = m + ':' + s + 'sec ' + audioElement.currentTime + ' ' + audioElement.duration;
+		if (audioElement.currentTime < 15) {
+			whichApp = myDemo.theo;
+		} 
+		/*
+		else if (audioElement.currentTime < 10) {
+			whichApp = myDemo.fun2();
+		} else if (audioElement.currentTime < 15) {
+			whichApp = myDemo.fun3();
+		} else if (audioElement.currentTime < 20) {
+			whichApp = myDemo.fun2();
+		} else {
+			whichApp = myDemo.fun1();
+		}
+		*/
 	}, false);
-
+	
 	audioElement.addEventListener("playing", function() {
 		playingDemo = true;
 // console.log('playing', playingDemo, audioElement.paused, audioElement.currentTime, new Date());
 	}, false);
-
-	audioElement.addEventListener("timeupdate", function() {
-// console.log('time', whichApp);
-		var duration = document.getElementById('duration'),
-			s = parseInt(audioElement.currentTime % 60, 10),
-			m = parseInt((audioElement.currentTime / 60) % 60, 10);
-// duration.innerHTML = m + ':' + s + 'sec ' + audioElement.currentTime + ' ' + audioElement.duration;
-		if (audioElement.currentTime < 5) {
-			whichApp = brainDemo.splashBrain;
-		} else if (audioElement.currentTime < 9 ) {
-			whichApp = brainDemo.theo;
-		} else if (audioElement.currentTime < 14 ) {
-			whichApp = brainDemo.richard;			
-		} else if (audioElement.currentTime < 28 ) {
-			whichApp = brainDemo.showScans;
-		} else if (audioElement.currentTime < 35 ) {
-			whichApp = brainDemo.rotateBrain;
-		} else if (audioElement.currentTime < 38 ) {
-			whichApp = brainDemo.zoomBrain;
-		} else if (audioElement.currentTime < 41 ) {
-			whichApp = brainDemo.panBrain;
-		} else if (audioElement.currentTime < 43 ) {
-			whichApp = brainDemo.highlightId(0, '#ff0');
-
-		} else if (audioElement.currentTime < 47 ) {
-			whichApp = brainDemo.highlightId(1, '#ff0');
-
-		} else if (audioElement.currentTime <  50 ) {
-			brainHack(2);
-			
-		} else if (audioElement.currentTime < 54 ) {
-			whichApp = brainDemo.highlightId(2, '#ff0');
-			
-		} else if (audioElement.currentTime < 72 ) {
-			whichApp = brainDemo.highlightId(3, '#0ff');
-		} else if (audioElement.currentTime < 74 ) {
-			whichApp = brainDemo.highlightId(4, '#0ff');
-		} else if (audioElement.currentTime < 76 ) {
-			whichApp = brainDemo.highlightId(5, '#0ff');			
-		} else {
-			whichApp = brainDemo.finish;
-		}
+	
+	audioElement.addEventListener("click", function() {
+		if ( playingDemo ) {playingDemo = false;}
+// console.log('click', playingDemo, audioElement.currentTime, audioElement.paused, new Date());
 	}, false);
-
+	
 	var updates = document.createElement( 'div' );
 	splash.appendChild( updates );
-	updates.innerHTML = '<p id="duration"><\/p><p id="status"><\/p>';
+	updates.innerHTML = '<p id="duration">duration<\/p><p id="status">status<\/p>';
+
+	var playingDemo = false;
 
     var scene, camera, controls, light, stats, renderer;
     var geometry, map, material, mesh;
@@ -136,7 +120,6 @@
 	var scans;
 	var scanCurrent;
 	var plane, boundary, axis, box;
-
 	var gui;
 	var objConfig = {
 		highlighting: true,
@@ -158,8 +141,8 @@
 		boxScaleY: 0,
 		boxScaleZ: 0,
 	};
-
 	var hack = {};
+
 
 	function brainHack(count) {
 		if (count === 1) {
@@ -221,8 +204,8 @@
         camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 10, 10000 );
         camera.position.set(200, 100, 250);
         scene.add( camera );
-		
-		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+		controls = new THREE.TrackballControls( camera );
 		controls.maxDistance = 800;
 
 		stats = new Stats();
@@ -234,7 +217,7 @@
 		projector = new THREE.Projector();
 
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-// document.addEventListener( 'click', onDocumentMouseClick, false ); // or mousedown?
+		document.addEventListener( 'click', onDocumentMouseClick, false ); // or mousedown?
 		document.addEventListener( 'keydown', onKeyDown, false );
     }
 
@@ -253,21 +236,20 @@
 			camera.position.x += -1 * Math.cos( tim * 0.15);
 			camera.position.z += -1 * Math.sin( tim * 0.15);
 		} else if ( playingDemo) {
-			if (typeof whichApp === 'function') {
-				whichApp();
-			} //else {
-				// whichApp;  // slow speed
-			//}
-		}
+			whichApp();
+			// console.log('render', whichApp());
+		}	
 		mouseMove = false;
+		
     }
 
 	function buildBrain() {
 		if (scans) { scene.remove(scans); }
+
 		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
 		scans = new THREE.Object3D();
 		var i;
-		for (i = 1; i <= hack.count; i++) {
+		for (var i = 1; i <= hack.count; i++) {
 			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
 			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
 			mesh = new THREE.Mesh( geometry, material );
@@ -284,20 +266,18 @@
 		  gui = null;
 		}
 
-		gui = new dat.GUI( );
-		gui.domElement.style.zIndex = 100;
-
+		gui = new dat.GUI( { height: 14 * 32 - 1});
+		
 		gui.add( objConfig, 'highlighting', true ).onChange( function() {
 			if ( !objConfig.highlighting) {
 				objConfig.highlighting = false;
 			} else {
 				objConfig.highlighting = true;
 			}
-		} );
+		} );		
 
 		gui.add( objConfig, 'opacityDefault', 0.01, 1 ).step(0.01).onChange( function() {
-			var i;
-			for (i = 0, l = scans.length; i < l; i++) {
+			for (var i = 0, l = scans.length; i < l; i++) {
 				scans[i].material.opacity = ( objConfig.opacityDefault );
 			}
 		} );
@@ -306,8 +286,7 @@
 		} );
 
 		gui.add( objConfig, 'scansStart').min(1).max(hack.count).step(1).onChange( function() {
-			var i;
-			for (i = 0, l = hack.count; i < l; i++) {
+			for (var i = 0, l = hack.count; i < l; i++) {
 				if (i < objConfig.scansStart || i > objConfig.scansFinish) {scans.children[i].visible = false;
 				} else {
 					scans.children[i].visible = true;
@@ -316,8 +295,7 @@
 		} );
 
 		gui.add( objConfig, 'scansFinish').min(1).max(hack.count).step(1).onChange( function() {
-			var i;
-			for (i = 0, l = hack.count; i < l; i++) {
+			for (var i = 0, l = hack.count; i < l; i++) {
 				if (i < objConfig.scansStart || i > objConfig.scansFinish) {scans.children[i].visible = false;
 				} else {
 					scans.children[i].visible = true;
@@ -332,7 +310,7 @@
 				objConfig.cameraMoving = true;
 			}
 		} );
-
+		
 		gui.add( objConfig, 'cameraCutoffNear', 1, 500 ).onChange( function() {
 			camera.near = objConfig.cameraCutoffNear;
 			camera.updateProjectionMatrix();
@@ -426,11 +404,11 @@
 		guiBox.close();
 	}
 
-	function onDocumentMouseMove( event ) { // needs work
+	function onDocumentMouseMove( event ) { // needs work - see also above
 		var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 		projector.unprojectVector( vector, camera );
-		var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() ),
-			intersects = ray.intersectObjects( scans.children );	
+		var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+		var intersects = ray.intersectObjects( scans.children );
 		if ( intersects.length > 0 ) {
 			if ( objConfig.highlighting && intersected !== intersects[ 0 ].object ) {
 				if ( intersected ) { intersected.material.opacity = objConfig.opacityDefault; }
@@ -447,7 +425,6 @@
 
 	function onDocumentMouseClick( event ) {
 		// splash.style.display = 'none';
-		return;
 	}
 
 	function onKeyDown ( event ) {
@@ -461,10 +438,11 @@
 	}
 
 	function scanHighlight(count) {
-		var i;
-		for (i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
+		for (var i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
 			scans.children[i].material.opacity = objConfig.opacityDefault;
 			if (i === count) { scans.children[i].material.opacity = objConfig.opacityHighlight; }
+			// if (var i == count + 1 && scans.children[i + 1]) scans.children[i].material.opacity = objConfig.opacityHighlight - 0.5;
+			// if (var i == count - 1 && scans.children[i - 1]) scans.children[i].material.opacity = objConfig.opacityHighlight - 0.5;
 		}
 	}
 
@@ -477,170 +455,246 @@
 	function showSplash() {
 		splash.style.display = 'block';
 	}
-
-	var brainDemo = brainDemo || {};
-	brainDemo.currentApp = '';
-	brainDemo.i = 20;
-	brainDemo.object = '';
 	
-	brainDemo.splashBrain = function() {
-		if ( brainDemo.currentApp !== 'splashBrain' ) {
-			brainDemo.currentApp = 'splashBrain';
-			brainDemo.i = 0.1;
+/*	
+	audioElement.addEventListener("timeupdate", function() {
+	console.log(audioElement.currentTime);
+		var duration = document.getElementById('duration');
+		var s = parseInt(audioElement.currentTime % 60);
+		var m = parseInt((audioElement.currentTime / 60) % 60);
+		duration.innerHTML = m + ':' + s + 'sec ' + audioElement.currentTime + ' ' + audioElement.duration;
+		if (audioElement.currentTime < 15) {
+			whichApp = myDemo.theo();
+		} 
+		/*
+		else if (audioElement.currentTime < 10) {
+			whichApp = myDemo.fun2();
+		} else if (audioElement.currentTime < 15) {
+			whichApp = myDemo.fun3();
+		} else if (audioElement.currentTime < 20) {
+			whichApp = myDemo.fun2();
+		} else {
+			whichApp = myDemo.fun1();
 		}
-		scans.rotation.y += brainDemo.i;
-		if (Math.abs(scans.rotation.y) > 4) { brainDemo.i = - brainDemo.i;  }
-	};
-
-	brainDemo.theo = function() {
-		if ( brainDemo.currentApp !== 'theo' ) {
-			brainDemo.i = 50;
-			brainDemo.currentApp = 'theo';
-			brainDemo.object = document.createElement( 'div' );
-			document.body.appendChild( brainDemo.object );
-			brainDemo.object.style.top = '20%';
-			brainDemo.object.style.position = 'absolute';
-			brainDemo.object.innerHTML = '<img src="theo-logo.png" width=200>';
+		
+	}, false);
+	
+*/
+	
+	var myDemo = myDemo || {};
+	
+	myDemo.i = 20;
+	myDemo.object = '';
+	myDemo.currentApp = '';
+	
+	myDemo.theo = function() {
+		if ( myDemo.currentApp != 'theo' ) {
+			myDemo.i = 20;
+			myDemo.currentApp = 'theo';
+			myDemo.object = document.createElement( 'div' );
+			document.body.appendChild( myDemo.object );
+			myDemo.object.style.top = '20%';
+			myDemo.object.style.position = 'absolute';
+			myDemo.object.innerHTML = '<img src="theo-logo.png" width=200>';
 		}
 		var stats = document.getElementById('status');
-		// stats.innerHTML='1. Hello world! ~ ' + new Date();
-
-		brainDemo.object.style.left = 250 + 5 * brainDemo.i + 'px';
-		brainDemo.object.style.top = 5 * brainDemo.i + 'px';
-		if (brainDemo.i > window.innerHeight - 100 ) {brainDemo.i = 50;}
-		brainDemo.i++;
-	};
+		stats.innerHTML='1. Hello world! ~ ' + new Date();
+		//splash.style.left = 200 + MyLib.i + 'px';
+		// if (MyLib.i > 80) { MyLib.i = 10; }
+		myDemo.i++;
+		
+		//x += deltaX;
+		//y += deltaY;
+		myDemo.object.style.left = 5 * myDemo.i + 'px';
+		myDemo.object.style.top = myDemo.i + 'px';
+		if (myDemo.i > window.innerHeight - 100 ) {myDemo.i = 20;}
+		//if (y < 100) {deltaY = -deltaY;}
+		//if (y > window.innerHeight) {deltaY = -deltaY;}
+		//i++;
+	}
 	
-	brainDemo.richard = function() {
-		if ( brainDemo.currentApp !== 'richard' ) {
-			brainDemo.currentApp = 'richard';
-			// brainDemo.i = 20;
-			if (brainDemo.object) {
-				brainDemo.object.style.display = 'none';
-			}
-			var i,
-				l = hack.count;
-			for ( i = 0; i < l; i++ ) {
-				scans.children[i].visible = false;
-			}
-			geometry = new THREE.PlaneGeometry( 200, 100 );
-			brainDemo.object = new THREE.Object3D();
-// text, fontSize, width, height, color, backgroundColor, shadowColor, shadowBlur
-			material = createText('Richard', 60, '', '','','','#ff0000'  ); 
+	/*
+	function playSound() {
+		if (replay_is_on) {
+			replay_is_on = true;
+			replayChar = replayCharOn;
+			if (!audioElement.src) { audioElement.setAttribute('src', 'vid1.wav'); }
+			audioElement.play();
+		} else {
+			replay_is_on = false;
+			replayChar = replayCharOff;
+			audioElement.pause();
+		}
+		splash.innerHTML = splashText + '<h1><a href="#" id="replay" onClick="playSound();" style="text-decoration:none;">' + replayChar + '<\/h1>';
+		playDemo();
+	}
+
+	
+	function playDemo() {
+		
+		controls.target.set( 0, 0, 0);
+		camera.up.set(0, 1, 0);
+		camera.position.set(200, 100, 250);
+		
+		// playingDemo = true;
+		showTheo();
+		// showImages();
+		// demoRotate(1, 0.05);
+		// highlightID(1,'h1');
+	}
+	
+	
+	
+	var t, images;
+
+	function showTheo() {
+		var theo = document.createElement( 'div' );
+		document.body.appendChild( theo );
+		theo.style.top = '20%';
+		theo.style.position = 'absolute';
+		theo.innerHTML = '<img src="theo-logo.png" width=200>';
+		moveTheo( 1, theo, 800, 2, 200, -2);
+	}
+
+	function moveTheo(i, theo, x, deltaX, y, deltaY) {
+		x += deltaX;
+		y += deltaY;
+		theo.style.left = x + 'px';
+		theo.style.top = y + 'px';
+		if (x > window.innerWidth - 100 || x < 100) {deltaX = -deltaX;}
+		if (y < 100) {deltaY = -deltaY;}
+		if (y > window.innerHeight) {deltaY = -deltaY;}
+		i++;
+		if (i < 1000) { t=setTimeout( function() { moveTheo(i, theo, x, deltaX, y, deltaY); }, 5 );
+		} else {
+			clearTimeout(t);
+			theo.style.display = 'none';
+			showImages();
+		}
+	}
+*/
+
+	function showImages() {
+		if (images) { scene.remove(images); }
+
+		geometry = new THREE.CubeGeometry( 100, 100, 100 );
+		images = new THREE.Object3D();
+		for (var i = 1; i <= hack.count; i++) {
+			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: 1, side: THREE.DoubleSide, transparent: true, wireframe: false} );
 			mesh = new THREE.Mesh( geometry, material );
-			mesh.position.set(50, 0, 0);
-			brainDemo.object.add( mesh );
-			scene.add( brainDemo.object );
+			// mesh.scale.set(0.01, 0.01, 0.01);
+			mesh.rotation.set(1.57 * Math.random(), 1.57 * Math.random(), 1.57 * Math.random());
+			mesh.position.set(200 * Math.random() - 100, 200 * Math.random() + hack.startY - 50, 200 * Math.random() - 100 );
+			images.add( mesh );
 		}
-	};
+		scene.add( images );
 
-	brainDemo.showScans = function() {
-		if ( brainDemo.currentApp !== 'showScans' ) {
-			brainDemo.currentApp = 'showScans';
-			// brainDemo.i = 20;
-			if (brainDemo.object) {
-				scene.remove(brainDemo.object);
-			}	
-			geometry = new THREE.CubeGeometry( 100, 100, 100 );
-			brainDemo.object = new THREE.Object3D();
-			var i, l = hack.count; 
-			for ( i = 1; i <= l; i++) {
-				map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
-				material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: 1, side: THREE.DoubleSide, transparent: true, wireframe: false} );
-				mesh = new THREE.Mesh( geometry, material );
-				// mesh.scale.set(0.01, 0.01, 0.01);
-				mesh.rotation.set(1.57 * Math.random(), 1.57 * Math.random(), 1.57 * Math.random());
-				mesh.position.set(200 * Math.random() - 100, 200 * Math.random() + hack.startY - 50, 200 * Math.random() - 100 );
-				brainDemo.object.add( mesh );
-			}
-			scene.add( brainDemo.object );
+		moveImages(1, 0.01);
+		// demoRotate(1, 0.05);
+	}
+
+	function moveImages(count, delta) {
+		for (var i = 0, l = hack.count; i < l; i++) {
+			scans.children[i].visible = false;
 		}
-		var rot = brainDemo.object.rotation;
-		rot.set( rot.x += 0.01, rot.y += 0.01, rot.z += 0.01);
-	};
 
-	brainDemo.rotateBrain = function() {
-		if ( brainDemo.currentApp !== 'rotateBrain' ) {
-			brainDemo.currentApp = 'rotateBrain';
-			brainDemo.i = 0.02;
-			if (brainDemo.object) {
-				scene.remove(brainDemo.object);
-			}
-			var i, l = hack.count;
-			for ( i = 0; i < l; i++ ) {
-				scans.children[i].visible = true;
-			}
-			scans.rotation.y = 0;
+		images.scale.set( 0.01 * count, 0.01 * count, 0.01 * count);
+
+		delta += delta;
+		images.rotation.set( delta, delta, delta);
+		count++;
+		// if (i % 10) { delta = -delta;}
+		if (count < 100) {
+			t=setTimeout(function(){moveImages(count, delta); },200);
+		} else {
+			clearTimeout(t);
+			scene.remove( images );
+			demoRotate(1, 0.05);
 		}
-		scans.rotation.y += brainDemo.i;
-		if (Math.abs(scans.rotation.y) > 0.5) { brainDemo.i = - brainDemo.i;  }
-	};
+	}
 
-	brainDemo.zoomBrain = function() {
-		if ( brainDemo.currentApp !== 'zoomBrain' ) {
-			brainDemo.currentApp = 'zoomBrain';
-			brainDemo.i = 0.02;
-			if (brainDemo.object) {
-				
-				scene.remove(brainDemo.object);
-			}
+	function demoRotate(count, delta) {
+		for (var i = 0, l = hack.count; i < l; i++) {
+			scans.children[i].visible = true;
 		}
-// scaling looks just like zooming and is a lot easier to do...
-		var scale = scans.scale;
-		scale.set( scale.x += brainDemo.i,
-			scale.y += brainDemo.i,
-			scale.z += brainDemo.i
-		);
-		if ( scale.x > 1.5  || scale.x < 0.5) { brainDemo.i = - brainDemo.i; }
-	};
-
-	brainDemo.panBrain = function() {
-		if ( brainDemo.currentApp !== 'panBrain' ) {
-			brainDemo.currentApp = 'panBrain';
-			brainDemo.i = 1;
+		scans.rotation.y += delta;
+		count++;
+		if (count === 50) { delta = -delta;}
+		if (count < 100) {
+			t=setTimeout(function(){demoRotate(count, delta); },20);
+		} else {
+			clearTimeout(t);
+			callbackRotate();
 		}
-// moving looks just like panning and is a lot easier to do...
-		scans.position.z += brainDemo.i;
-		if (Math.abs(scans.position.z) > 50) { brainDemo.i = - brainDemo.i; }
-	};
-	
-	brainDemo.highlightId = function(id, color) {
-		if ( brainDemo.currentApp !== 'highlightId' ) {
-			brainDemo.currentApp = 'highlightId';
-			brainDemo.i = 0;
+	}
+
+	function callbackRotate() {
+		demoZoom(1,1,0.05);
+	}
+
+	function demoZoom(i,scl,delta) {
+		scl += delta;
+		scans.scale.set(scl,scl,scl);
+		i++;
+		if (i === 50) { delta = -delta; }
+		if (i < 100) {
+			t=setTimeout( function(){ demoZoom( i, scl, delta); } , 20 );
+		} else {
+			clearTimeout(t);
+			callbackZoom();
 		}
-		var ids = ['h1','h2','h3','c1','c2','c3'],
-			it = document.getElementById(ids[id]);
-		it.style.backgroundColor = color;
-	};
+	}
 
-	brainDemo.finish = function() {
-		scans.rotation.y = 0;
-		scans.scale.x = scans.scale.y = scans.scale.z = 1;
-		scans.position.z = 0;
-		return;
-	};
+	function callbackZoom() {
+		demoMove(1, 2);
+	}
 
-	function createText(text, fontSize, width, height, color, backgroundColor, shadowColor, shadowBlur) {
-		var canvas = document.createElement("canvas");
-		if (width) { canvas.width = width; }
-		if (height) { canvas.height = height; }
-		var context = canvas.getContext("2d");
-		if (backgroundColor) { context.fillStyle = backgroundColor; } else { context.fillStyle = '#ffffff'; }
-		context.fillRect( 0, 0, width, height );
-		//context.lineWidth = 5;
-		//context.strokeRect(0, 0, width, height);	
-		if (color) { context.fillStyle = color; } else { context.fillStyle = '#000000'; } 
-		context.globalAlpha = 0.8;
-		if (shadowColor) {context.shadowColor = shadowColor; }
-		if (shadowBlur) { context.shadowBlur = shadowBlur; } else { context.shadowBlur = 10; } 
-		if (fontSize) { context.font = fontSize + "pt Arial bold"; } else {context.font = "24pt Arial bold"; }
-		// context.textAlign = "center";
-		context.textBaseline = 'top';
-		context.fillText(text, 0, 0);
-		var map = new THREE.Texture( canvas );
-		map.needsUpdate = true;
-		return new THREE.MeshBasicMaterial( { map: map, transparent: true } );
+	function demoMove(i,delta) {
+		scans.position.z += delta;
+		i++;
+		if (i === 50) { delta = -delta;}
+		if (i < 100) {
+			t=setTimeout( function(){ demoMove(i,delta ); },20);
+		} else {
+			clearTimeout(t);
+			callbackMove();
+		}
+	}
+
+	function callbackMove() {
+		highlightID(1,'h1', '#cc0000');
+	}
+
+	function highlightID(i,id, colr) {
+		var thing = document.getElementById(id);
+		if (i % 2) {
+			thing.style.backgroundColor = colr;
+		} else {
+			thing.style.backgroundColor = '#ffffff';
+		}
+		i++;
+		// if (i == 50) { delta = -delta;}
+		if (i < 10) {
+			t=setTimeout(function(){highlightID(i,id, colr); },200);
+		} else {
+			clearTimeout(t);
+			thing.style.backgroundColor = '#ffffff';
+			callbackHighLightID(id);
+		}
+	}
+
+	function callbackHighLightID(id) {
+		ids = ['h1','h2','h3','c1','c2','c3'];
+		i = ids.indexOf(id) + 1;
+		if (i < 3) {colr = '#cc0000';} else { colr = '#00cc00';}
+		if (i > ids.length - 1) {return;}
+		highlightID(1,ids[i], colr);
+	}
+
+	function pauseComputer(ms) {
+		ms += new Date().getTime();
+		while ( new Date() < ms){}
 	}
 </script>
 </body>
