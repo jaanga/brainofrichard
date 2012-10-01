@@ -486,24 +486,11 @@
 		}
 	}
 
-
-	
-/*
-	function hideSplash() {
-		splash.style.display = 'none';
-		replay_is_on = false;
-		audioElement.pause();
-	}
-
-	function showSplash() {
-		splash.style.display = 'block';
-	}
-*/
-
 	var brainDemo = brainDemo || {};
 	brainDemo.currentApp = '';
 	brainDemo.i = 20;
 	brainDemo.object = '';
+	brainDemo.status = document.getElementById('status');
 	
 	brainDemo.showSplash = function() {
 		splash.style.display = 'block';
@@ -519,6 +506,7 @@
 		if ( brainDemo.currentApp !== 'splashBrain' ) {
 			brainDemo.currentApp = 'splashBrain';
 			brainDemo.i = 0.1;
+			brainDemo.status.innerHTML = 'Here we go...';
 		}
 		scans.rotation.y += brainDemo.i;
 		if (Math.abs(scans.rotation.y) > 4) { brainDemo.i = - brainDemo.i;  }
@@ -533,6 +521,7 @@
 			brainDemo.object.style.top = '20%';
 			brainDemo.object.style.position = 'absolute';
 			brainDemo.object.innerHTML = '<img src="theo-logo.png" width=200>';
+			brainDemo.status.innerHTML = 'See theoarmour.com'
 		}
 		var stats = document.getElementById('status');
 		// stats.innerHTML='1. Hello world! ~ ' + new Date();
@@ -563,6 +552,7 @@
 			mesh.position.set(50, 0, 0);
 			brainDemo.object.add( mesh );
 			scene.add( brainDemo.object );
+			brainDemo.status.innerHTML = 'Eventually we will have a 3D view of Richard to wrap around this brain'
 		}
 	};
 
@@ -586,6 +576,9 @@
 				brainDemo.object.add( mesh );
 			}
 			scene.add( brainDemo.object );
+			brainDemo.status.innerHTML = 'The name of the beast is an oligodendroglioma.' +
+			'<br>It\'s home is in my posterior cingulate gyrus, ' +
+			'more precisely Brodmanns Area 23.' ;
 		}
 		var rot = brainDemo.object.rotation;
 		rot.set( rot.x += 0.01, rot.y += 0.01, rot.z += 0.01);
@@ -603,6 +596,8 @@
 				scans.children[i].visible = true;
 			}
 			scans.rotation.y = 0;
+			brainDemo.status.innerHTML = 'You put your left brain in,' +
+			'<br>and you shake it all about...';
 		}
 		scans.rotation.y += brainDemo.i;
 		if (Math.abs(scans.rotation.y) > 0.5) { brainDemo.i = - brainDemo.i;  }
@@ -630,6 +625,7 @@
 		if ( brainDemo.currentApp !== 'panBrain' ) {
 			brainDemo.currentApp = 'panBrain';
 			brainDemo.i = 1;
+			brainDemo.status.innerHTML = 'Press the \'h\' key to hide the controls.';
 		}
 // moving looks just like panning and is a lot easier to do...
 		scans.position.z += brainDemo.i;
@@ -650,6 +646,9 @@
 		scans.rotation.y = 0;
 		scans.scale.x = scans.scale.y = scans.scale.z = 1;
 		scans.position.z = 0;
+		brainApp.viewHome();
+		brainDemo.status.innerHTML = 'Thanks for watching!' +
+		'<br>It\'s probably a good thing to reload this web page if you want faster response.';
 		return;
 	};
 
