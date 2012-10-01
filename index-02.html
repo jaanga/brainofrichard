@@ -27,17 +27,17 @@
 
 	var info = document.createElement( 'div' );
 	document.body.appendChild( info );
-	info.style.top = '15px';
+	info.style.top = '10px';
 	info.style.color = '#000';
 	info.style.position = 'absolute';
 	info.style.width = '100%';
-	info.innerHTML = 'brain of richard ~ 2012-01-18' +
+	info.innerHTML = 'brain of richard ross 2012-01-18' +
 	' ~ <a id="h1" href="JavaScript:brainHack(1);">Hack01<\/a>' +
 	' ~ <a id="h2" href="JavaScript:brainHack(2);">Hack02<\/a>' +
 	' ~ <a id="h3" href="JavaScript:brainHack(3);">Hack03<\/a>' +
-	' ~ <a id="c1" href="#" onClick="brainApp.viewHome()">Home<\/a>' +
-	' ~ <a id="c2" href="#" onClick="brainApp.viewTop()">Top<\/a>' +
-	' ~ <a id="c3" href="#" onClick="brainApp.viewSide()">Side<\/a>' +
+	' ~ <a id="c1" href="JavaScript:camera.up.set(0,1,0);controls.target.set(0,0,0);camera.position.set(200, 100, 250); null;">Home<\/a>' +
+	' ~ <a id="c2" href="JavaScript:controls.target.set(0,0,0);camera.position.set(0, 200, 0);return;">Top<\/a>' +
+	' ~ <a id="c3" href="JavaScript:controls.target.set(0,0,0);camera.position.set(200, 0, 0);return;">Side<\/a>' +
 	'<br><a href="#" onClick="brainDemo.showSplash();">About<\/a>';
 
 	var splash = document.createElement( 'div' );
@@ -160,49 +160,7 @@
 	};
 
 	var hack = {};
-	
-	var brainApp = brainApp || {};
-	
-	brainApp.buildBrain = function() {
-		if (scans) { scene.remove(scans); }
-		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
-		scans = new THREE.Object3D();
-		var i;
-		for (i = 1; i <= hack.count; i++) {
-			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.rotation.x = hack.angle;
-			mesh.position.set(0, hack.startY + i * hack.deltaY, hack.startZ + i * hack.deltaZ);
-			scans.add( mesh );
-		}
-		scene.add( scans );
-	};
-	
-	brainApp.scanHighlight = function(count) {
-		var i;
-		for (i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
-			scans.children[i].material.opacity = objConfig.opacityDefault;
-			if (i === count) { scans.children[i].material.opacity = objConfig.opacityHighlight; }
-		}
-	}
-	
-	brainApp.viewHome = function() {
-		camera.up.set(0,1,0);
-		controls.target.set(0,0,0);
-		camera.position.set(200, 100, 250);
-	}
-	
-	brainApp.viewTop = function() {
-		controls.target.set(0,0,0);
-		camera.position.set(0, 200, 0);
-	}
 
-	brainApp.viewSide = function() {
-		controls.target.set(0,0,0);
-		camera.position.set(200, 0, 0);
-	}
-	
 	function brainHack(count) {
 		if (count === 1) {
 			hack = {
@@ -245,7 +203,7 @@
 		}
 		objConfig.opacityDefault = hack.opacityDefault;
 		objConfig.scansFinish = hack.count;
-		brainApp.buildBrain();
+		buildBrain();
 		buildGui();
 	}
 
@@ -297,9 +255,9 @@
 		} else if ( playingDemo) {
 			if (typeof whichApp === 'function') {
 				whichApp();
-			} else {
-				whichApp;  // slow speed
-			}
+			} //else {
+				// whichApp;  // slow speed
+			//}
 		}
 		mouseMove = false;
     }
@@ -462,7 +420,7 @@
 				if ( intersected ) { intersected.material.opacity = objConfig.opacityDefault; }
 				intersected = intersects[ 0 ].object;
 				scanCurrent = scans.children.indexOf(intersected);
-				brainApp.scanHighlight(scanCurrent);
+				scanHighlight(scanCurrent);
 			}
 		} else {
 			if (intersected) { intersected.material.opacity = objConfig.opacityDefault; }
@@ -486,8 +444,13 @@
 		}
 	}
 
-
-	
+	function scanHighlight(count) {
+		var i;
+		for (i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
+			scans.children[i].material.opacity = objConfig.opacityDefault;
+			if (i === count) { scans.children[i].material.opacity = objConfig.opacityHighlight; }
+		}
+	}
 /*
 	function hideSplash() {
 		splash.style.display = 'none';
@@ -500,6 +463,24 @@
 	}
 */
 
+	var brainApp = brainApp || {};
+	
+	function buildBrain() {
+		if (scans) { scene.remove(scans); }
+		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
+		scans = new THREE.Object3D();
+		var i;
+		for (i = 1; i <= hack.count; i++) {
+			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
+			mesh = new THREE.Mesh( geometry, material );
+			mesh.rotation.x = hack.angle;
+			mesh.position.set(0, hack.startY + i * hack.deltaY, hack.startZ + i * hack.deltaZ);
+			scans.add( mesh );
+		}
+		scene.add( scans );
+	}	
+	
 	var brainDemo = brainDemo || {};
 	brainDemo.currentApp = '';
 	brainDemo.i = 20;
