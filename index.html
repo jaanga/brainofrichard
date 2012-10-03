@@ -134,7 +134,7 @@
 	var mouseMove;
 
 	var scans;
-	var scanCurrent;
+	// var scanCurrent;
 	var plane, boundary, axis, box;
 
 	var gui;
@@ -160,48 +160,6 @@
 	};
 
 	var hack = {};
-	
-	var brainApp = brainApp || {};
-	
-	brainApp.buildBrain = function() {
-		if (scans) { scene.remove(scans); }
-		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
-		scans = new THREE.Object3D();
-		var i;
-		for (i = 1; i <= hack.count; i++) {
-			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.rotation.x = hack.angle;
-			mesh.position.set(0, hack.startY + i * hack.deltaY, hack.startZ + i * hack.deltaZ);
-			scans.add( mesh );
-		}
-		scene.add( scans );
-	};
-	
-	brainApp.scanHighlight = function(count) {
-		var i;
-		for (i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
-			scans.children[i].material.opacity = objConfig.opacityDefault;
-			if (i === count) { scans.children[i].material.opacity = objConfig.opacityHighlight; }
-		}
-	}
-	
-	brainApp.viewHome = function() {
-		camera.up.set(0,1,0);
-		controls.target.set(0,0,0);
-		camera.position.set(200, 100, 250);
-	}
-	
-	brainApp.viewTop = function() {
-		controls.target.set(0,0,0);
-		camera.position.set(0, 200, 0);
-	}
-
-	brainApp.viewSide = function() {
-		controls.target.set(0,0,0);
-		camera.position.set(200, 0, 0);
-	}
 	
 	function brainHack(count) {
 		if (count === 1) {
@@ -247,7 +205,52 @@
 		objConfig.scansFinish = hack.count;
 		brainApp.buildBrain();
 		buildGui();
+	}	
+	
+	var brainApp = brainApp || {};
+	
+	brainApp.buildBrain = function() {
+		if ( scans ) { scene.remove(scans); }
+		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
+		scans = new THREE.Object3D();
+		scans.current = 0;
+		var i, l = hack.count;
+		for (i = 1; i <= l; i++) {
+			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
+			mesh = new THREE.Mesh( geometry, material );
+			mesh.rotation.x = hack.angle;
+			mesh.position.set(0, hack.startY + i * hack.deltaY, hack.startZ + i * hack.deltaZ);
+			scans.add( mesh );
+		}
+		scene.add( scans );
+	};
+	
+	brainApp.scanHighlight = function(count) {
+		var i;
+		for (i = objConfig.scansStart - 1, l = hack.count; i < l; i++) {
+			scans.children[i].material.opacity = objConfig.opacityDefault;
+			if (i === count) { scans.children[i].material.opacity = objConfig.opacityHighlight; }
+		}
 	}
+	
+	brainApp.viewHome = function() {
+		camera.up.set(0,1,0);
+		controls.target.set(0,0,0);
+		camera.position.set(200, 100, 250);
+	}
+	
+	brainApp.viewTop = function() {
+		controls.target.set(0,0,0);
+		camera.position.set(0, 200, 0);
+	}
+
+	brainApp.viewSide = function() {
+		controls.target.set(0,0,0);
+		camera.position.set(200, 0, 0);
+	}
+	
+
 
 	init();
     animate();
@@ -461,8 +464,8 @@
 			if ( objConfig.highlighting && intersected !== intersects[ 0 ].object ) {
 				if ( intersected ) { intersected.material.opacity = objConfig.opacityDefault; }
 				intersected = intersects[ 0 ].object;
-				scanCurrent = scans.children.indexOf(intersected);
-				brainApp.scanHighlight(scanCurrent);
+				scans.current = scans.children.indexOf(intersected);
+				brainApp.scanHighlight(scans.current);
 			}
 		} else {
 			if (intersected) { intersected.material.opacity = objConfig.opacityDefault; }
@@ -479,10 +482,10 @@
 	function onKeyDown ( event ) {
 // http://www.webonweboff.com/tips/js/event_key_codes.aspx
 		switch( event.keyCode ) {
-			case 37: /*<*/	scanCurrent--; if (scanCurrent < 0) {scanCurrent = hack.count;} scanHighlight(scanCurrent); break;
-			case 39: /*>*/	scanCurrent++; if (scanCurrent > hack.count) {scanCurrent = 0;} scanHighlight(scanCurrent); break;
-			case 38: /*^*/	scanCurrent = 0; scanHighlight(0); break;
-			case 40: /*v*/	scanCurrent = hack.count; scanHighlight(hack.count - 1); break;
+			case 37: /*<*/	scans.current--; if (scans.current < 0) {scans.current = hack.count;} brainApp.scanHighlight(scans.current); break;
+			case 39: /*>*/	scans.current++; if (scans.current > hack.count) {scans.current = 0;} brainApp.scanHighlight(scans.current); break;
+			case 38: /*^*/	scans.current = 0; brainApp.scanHighlight(0); break;
+			case 40: /*v*/	scans.current = hack.count; brainApp.scanHighlight(hack.count - 1); break;
 		}
 	}
 
