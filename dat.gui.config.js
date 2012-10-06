@@ -1,4 +1,4 @@
-	var gui;
+	var gui, guiExtras;
 	var guiConfig = {
 		zoom: 1.0,
 		rotate: 1.0,
@@ -58,7 +58,7 @@
 		gui = new dat.GUI( );
 		// gui.domElement.style.zIndex = 100;
 		
-		gui.addFolder('Zoom / Ratate / Pan');
+		gui.addFolder('Zoom / Rotate / Pan');
 		gui.add( guiConfig, 'zoom', -50, 50 ).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			zoomView ( guiConfig.zoom );
@@ -145,7 +145,7 @@
 			camera.updateProjectionMatrix();
 		} );
 
-		var guiExtras = gui.addFolder('Extras');
+		guiExtras = gui.addFolder('Extras');
 	
 
 		guiExtras.add( guiConfig, 'planeVisible', true ).onChange( function() {
