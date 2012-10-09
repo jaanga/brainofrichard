@@ -147,10 +147,10 @@
 			text = 'The \'Camera\' menu allows you to toggle the automatic camera motion.'
 			brainDemo.openMenu(guiCamera,guiScans);
 		} else if (tim === 50) {
-			playingDemo = true;
-			guiConfig.cameraMoving = false;
 			text = 'You can also set camera cutoffs. This allows for views that cut through the scans at oblique angles.'
 		} else if (tim === 55) {
+			playingDemo = true;
+			guiConfig.cameraMoving = false;		
 			text = 'The \'Extras\' menu toggles the display of four different viewing aids.'
 			brainDemo.openMenu(guiExtras,guiCamera);
 		} else if (tim === 60 ) {
@@ -164,7 +164,7 @@
 			brainDemo.openMenu(guiHelp,guiExtras);
 		} else if (tim === 70 ) {
 			// whichApp = function(){ return; };
-			text = 'You can also display the splash screen from here';
+			text = 'You can also display the splash screen from here.';
 		} else if (tim === 75 ) {
 			text = 'Thanks for watching.' +
 		'<br><br>Happy brain examining!';
