@@ -1,4 +1,4 @@
-	var gui, guiView, guiFiles, guiViews, guiScans, guiCamera, guiExtras, guiHelp;
+	var gui, guiExtras;
 	var guiConfig = {
 		zoom: 1.0,
 		rotate: 1.0,
@@ -18,7 +18,6 @@
 			guiConfig.cameraMoving = false;
 			controls.target.set(0,0,0);
 			camera.up.set(0,1,0);
-			
 			camera.position.set(0, 200, 0);
 		},	
 		side_view: function() {
@@ -38,19 +37,17 @@
 		planeVisible: false,
 		boundaryVisible: false,
 		axisVisible: false,
-		markerVisible: false,
-		markerX: 0,
-		markerY: 0,
-		markerZ: 0,
-		markerScaleX: 0,
-		markerScaleY: 0,
-		markerScaleZ: 0,
+		boxVisible: false,
+		boxX: 0,
+		boxY: 0,
+		boxZ: 0,
+		boxScaleX: 0,
+		boxScaleY: 0,
+		boxScaleZ: 0,
 		Hide_This_Menu: 'Press the "h" key',
 		Show_About_Box: function() { splash.style.display = 'block'; }
 	};
 
-	// var buildGui = buildGui || {};
-	
 	function buildGui() {
 		if (gui) {
 		  gui.destroy();
@@ -60,36 +57,35 @@
 		gui = new dat.GUI( );
 		// gui.domElement.style.zIndex = 100;
 		
-		guiView = gui.addFolder('Zoom / Rotate / Pan');
-		guiView.open();
-		guiView.add( guiConfig, 'zoom', -50, 50 ).onFinishChange( function() {
+		gui.addFolder('Zoom / Rotate / Pan');
+		gui.add( guiConfig, 'zoom', -50, 50 ).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			zoomView ( guiConfig.zoom );
 		} );
-		guiView.add( guiConfig, 'rotate', -50, 50 ).step(1).onFinishChange( function(){
+		gui.add( guiConfig, 'rotate', -50, 50 ).step(1).onFinishChange( function(){
 			guiConfig.cameraMoving = false;
 			rotateView( guiConfig.rotate );
 		} );
-		guiView.add( guiConfig, 'pan_Vertical', -50, 50 ).onFinishChange( function() {
+		gui.add( guiConfig, 'pan_Vertical', -50, 50 ).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			panView ( 0, guiConfig.pan_Vertical);
 		} );		
-		guiView.add( guiConfig, 'pan_Horizontal', -50, 50 ).onFinishChange( function() {
+		gui.add( guiConfig, 'pan_Horizontal', -50, 50 ).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			panView ( guiConfig.pan_Horizontal, 0);
 		} );
 		
-		guiFiles = gui.addFolder('Open Files');
+		var guiFiles = gui.addFolder('Open Files');
 		guiFiles.add( guiConfig, 'top_view_of_brain' );
 		guiFiles.add( guiConfig, 'right_side_of_brain' );
 		guiFiles.add( guiConfig, 'left_side_of_brain' );
 		
-		guiViews = gui.addFolder('Views');
+		var guiViews = gui.addFolder('Views');
 		guiViews.add( guiConfig, 'home_view' );
 		guiViews.add( guiConfig, 'top_view' );
 		guiViews.add( guiConfig, 'side_view' );
 		
-		guiScans = gui.addFolder('Scans');
+		var guiScans = gui.addFolder('Scans');
 
 		guiScans.add( guiConfig, 'highlighting', true ).onChange( function() {
 			if ( !guiConfig.highlighting) {
@@ -129,7 +125,7 @@
 			}
 		} );
 
-		guiCamera = gui.addFolder('Camera');
+		var guiCamera = gui.addFolder('Camera');
 		guiCamera.add( guiConfig, 'cameraMoving', true ).onChange( function() {
 			if ( !guiConfig.cameraMoving) {
 				guiConfig.cameraMoving = false;
@@ -173,7 +169,7 @@
 			} else {
 				guiConfig.boundaryVisible = true;
 				if (boundary) { scene.remove(boundary); }
-				geometry = new THREE.CubeGeometry( 200, 200, 200, 1, 1, 1);
+				geometry = new THREE.CubeGeometry( 200, hack.deltaY * hack.count, 200, 1, 1, 1);
 				material = new THREE.MeshNormalMaterial( { wireframe: true } );
 				boundary = new THREE.Mesh( geometry, material );
 				boundary.rotation.x = hack.angle;
@@ -195,7 +191,7 @@
 			}
 		} );
 
-		guiExtras.add( guiConfig, 'markerVisible', true ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxVisible', true ).onChange( function() {
 			if ( !guiConfig.boxVisible) {
 				guiConfig.boxVisible = false;
 				scene.remove( box );
@@ -208,28 +204,28 @@
 				scene.add( box );
 			}
 		} );
-		guiExtras.add( guiConfig, 'markerX', -100, 100 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxX', -100, 100 ).onChange( function() {
 			if (box) { box.position.x = guiConfig.boxX; }
 		} );
-		guiExtras.add( guiConfig, 'markerY', -100, 100 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxY', -100, 100 ).onChange( function() {
 			if (box) { box.position.y = guiConfig.boxY; }
 		} );
-		guiExtras.add( guiConfig, 'markerZ', -100, 100 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxZ', -100, 100 ).onChange( function() {
 			if (box) { box.position.z = guiConfig.boxZ; }
 		} );
 
 
-		guiExtras.add( guiConfig, 'markerScaleX', 0, 5 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxScaleX', 0, 5 ).onChange( function() {
 			if (box) { box.scale.x = guiConfig.boxScaleX; }
 		} );
-		guiExtras.add( guiConfig, 'markerScaleY', 0, 5 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxScaleY', 0, 5 ).onChange( function() {
 			if (box) { box.scale.y = guiConfig.boxScaleY; }
 		} );
-		guiExtras.add( guiConfig, 'markerScaleZ', 0, 5 ).onChange( function() {
+		guiExtras.add( guiConfig, 'boxScaleZ', 0, 5 ).onChange( function() {
 			if (box) { box.scale.z = guiConfig.boxScaleZ; }
 		} );
-
-		guiHelp = gui.addFolder('About');
+		
+		var guiHelp = gui.addFolder('About');
 		guiHelp.add( guiConfig, 'Hide_This_Menu' );
 		guiHelp.add( guiConfig, 'Show_About_Box' );
 		
