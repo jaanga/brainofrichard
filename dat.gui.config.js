@@ -8,6 +8,8 @@
 		top_view_of_brain: function() { brainHack(1); },
 		right_side_of_brain: function() { brainHack(2); },
 		left_side_of_brain: function() { brainHack(3); },
+		artichoke: function() { brainHack(4); },
+		cactus: function() { brainHack(5); },
 		home_view: function() {
 			guiConfig.cameraMoving = false;
 			camera.up.set(0, 1, 0);
@@ -83,6 +85,8 @@
 		guiFiles.add( guiConfig, 'top_view_of_brain' );
 		guiFiles.add( guiConfig, 'right_side_of_brain' );
 		guiFiles.add( guiConfig, 'left_side_of_brain' );
+		//guiFiles.add( guiConfig, 'artichoke' );
+		//guiFiles.add( guiConfig, 'cactus' );
 		
 		guiViews = gui.addFolder('Views');
 		guiViews.add( guiConfig, 'home_view' );
