@@ -53,7 +53,7 @@
 	'<h2>~<\/h2>' +
 	'<p>Use your mouse or scroll to update the view</p>' +
 	'<h2>~<\/h2>' +
-	'<p>Launch the demo...<\/p>';
+	'<p>Launch the 90 second demo...<\/p>';
 	splash.innerHTML = splashText;
 
 	var playingDemo = false;
@@ -80,7 +80,7 @@
 	var demoText = '<h3 style="text-align:right;"><a href="#" title="Click to close" onClick="demo.style.display = \'none\'" style="color:#888;text-decoration:none;">[X]<\/a><\/h3>';
 	
 	splash.appendChild( audioElement );
-	audioElement.setAttribute('src', '90-seconds-of-silence.ogg');
+	audioElement.setAttribute('src', 'brain-of-richard.ogg');
 	audioElement.controls = 'true';
 
 	audioElement.addEventListener("click", function() {
@@ -103,69 +103,68 @@
 			text = 'Welcome to the Brain of Richard demo!' +
 			'<br><br>With your mouse on screen...' +
 			'<br><br>or by clicking on right-side menu...';	
-		} else if (tim === 5 ) {
+		} else if (tim === 8 ) {
 			text = 'You can zoom in and out.';
 			whichApp = brainDemo.zoomBrain;	
-		} else if (tim === 8 ) {
+		} else if (tim === 11 ) {
 			text = 'You can rotate the scans.';
 			whichApp = brainDemo.rotateBrain;
-		} else if (tim === 11 ) {
+		} else if (tim === 14 ) {
 			text = 'You can pan the camera left and right or up and down.';
 			whichApp = brainDemo.panBrain;
-		} else if (tim === 15 ) {
+		} else if (tim === 19 ) {
 			whichApp = function(){ return; };
 			text = 'The \'Open Files\' menu lets you open different set of scan files'
 			brainDemo.openMenu(guiFiles, guiView);
-		} else if (tim === 18 ) {
+		} else if (tim === 24 ) {
 			whichApp = function(){ return; };
 			text = 'The file named \'Right_side_of_brain\' is of particular interest.'
-		} else if (tim === 21) {
+		} else if (tim === 28) {
 			text = 'The \'Views\' menu enables you to jump to different views...';
 			brainDemo.openMenu(guiViews,guiFiles);
-		} else if (tim === 24 ) {
+		} else if (tim === 30 ) {
 			text = 'including top view...';
 			guiConfig.top_view();
-		} else if (tim === 27 ) {
+		} else if (tim === 34 ) {
 			text = 'and side view...';
 			guiConfig.side_view();
-		} else if (tim === 30 ) {
+		} else if (tim === 38 ) {
 			text = 'And return to home view' +
 			'<br><br>Use this menu if you ever get lost in space...';
 			guiConfig.home_view();
-		} else if (tim === 33 ) {
+		} else if (tim === 42 ) {
 			text = 'The \'Scans\' menu allows you to toggle the highlighting on and off';
 			brainDemo.openMenu(guiScans,guiViews);
-		} else if (tim === 37 ) {
-			text = 'With highlighting on, individual scans highlight as you move over them.';
 			whichApp = brainDemo.highlightScans;
-			
-		} else if (tim === 45 ) {
+		} else if (tim === 77 ) {
+			text = 'With highlighting on, individual scans highlight as you move over them.';
+		} else if (tim === 52 ) {
 			whichApp = function(){ return; };
 			guiConfig.highlighting = false;
 			playingDemo = false;
 			guiConfig.cameraMoving = true;
 			text = 'The \'Camera\' menu allows you to toggle the automatic camera motion.'
 			brainDemo.openMenu(guiCamera,guiScans);
-		} else if (tim === 50) {
+		} else if (tim === 56) {
 			text = 'You can also set camera cutoffs. This allows for views that cut through the scans at oblique angles.'
-		} else if (tim === 55) {
+		} else if (tim === 63) {
 			playingDemo = true;
 			guiConfig.cameraMoving = false;		
 			text = 'The \'Extras\' menu toggles the display of four different viewing aids.'
 			brainDemo.openMenu(guiExtras,guiCamera);
-		} else if (tim === 60 ) {
+		} else if (tim === 65 ) {
 			text = 'The display aids are:<ul>' +
 			'<li>Ground plane</li>' +
 			'<li>Bounding box</li>' +
 			'<li>3D axis indicator</li>' +
 			'<li>Marker box for highlighting items of interest</li></ul>';
-		} else if (tim === 65 ) {
+		} else if (tim === 75 ) {
 			text = 'The \'Help\' menu reminds you that you can press \'h\' to hide this menu';
 			brainDemo.openMenu(guiHelp,guiExtras);
-		} else if (tim === 70 ) {
+		} else if (tim === 80 ) {
 			// whichApp = function(){ return; };
 			text = 'You can also display the splash screen from here.';
-		} else if (tim === 75 ) {
+		} else if (tim === 84 ) {
 			text = 'Thanks for watching.' +
 		'<br><br>Happy brain examining!';
 			brainDemo.openMenu(guiView,guiHelp);
