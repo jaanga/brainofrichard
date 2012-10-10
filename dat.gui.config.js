@@ -85,8 +85,8 @@
 		guiFiles.add( guiConfig, 'top_view_of_brain' );
 		guiFiles.add( guiConfig, 'right_side_of_brain' );
 		guiFiles.add( guiConfig, 'left_side_of_brain' );
-		//guiFiles.add( guiConfig, 'artichoke' );
-		//guiFiles.add( guiConfig, 'cactus' );
+		guiFiles.add( guiConfig, 'artichoke' );
+		guiFiles.add( guiConfig, 'cactus' );
 		
 		guiViews = gui.addFolder('Views');
 		guiViews.add( guiConfig, 'home_view' );
