@@ -48,9 +48,10 @@
 		markerScaleY: 0,
 		markerScaleZ: 0,
 		Hide_This_Menu: 'Press the "h" key',
-		Show_About_Box: function() { splash.style.display = 'block'; }
+		showSplashScreen: function() { splash.style.display = 'block'; }
 	};
 
+// has to be a function because need to rebuild the gui each time new scans are loaded
 	// var buildGui = buildGui || {};
 	
 	function buildGui() {
@@ -222,7 +223,6 @@
 			if (box) { box.position.z = guiConfig.boxZ; }
 		} );
 
-
 		guiExtras.add( guiConfig, 'markerScaleX', 0, 5 ).onChange( function() {
 			if (box) { box.scale.x = guiConfig.boxScaleX; }
 		} );
@@ -235,6 +235,5 @@
 
 		guiHelp = gui.addFolder('About');
 		guiHelp.add( guiConfig, 'Hide_This_Menu' );
-		guiHelp.add( guiConfig, 'Show_About_Box' );
-		
+		guiHelp.add( guiConfig, 'showSplashScreen' );
 	};	
