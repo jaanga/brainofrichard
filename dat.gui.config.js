@@ -52,7 +52,7 @@
 	};
 
 // has to be a function because need to rebuild the gui each time new scans are loaded
-	// var buildGui = buildGui || {};
+// var buildGui = buildGui || {}; // cannot get to work yet...
 	
 	function buildGui() {
 		if (gui) {

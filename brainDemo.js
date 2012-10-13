@@ -130,7 +130,7 @@
 		replay_is_on = false;
 		audioElement.pause();
 	};
-	// brainDemo.hideSplash();
+// brainDemo.hideSplash();
 	
 /*
 	brainDemo.theo = function() {
