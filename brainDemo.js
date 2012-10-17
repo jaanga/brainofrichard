@@ -5,7 +5,7 @@
 	demo.style.borderRadius = '10px';
 	demo.style.boxShadow = '10px 10px 5px #888888';
 	demo.style.color = '#000';
-	// demo.style.display = 'none';
+	demo.style.display = 'none';
 	demo.style.right = '300px';
 	demo.style.opacity = '0.85';
 	demo.style.padding = '0 15px 15px 15px';
@@ -25,7 +25,7 @@
 	audioElement.addEventListener("playing", function() {
 		loadScript('brainDemo.js');
 		playingDemo = true;
-		// demo.style.display = 'block';
+		demo.style.display = 'block';
 	}, false);
 	
 	function loadScript(fname) {
