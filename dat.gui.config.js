@@ -15,20 +15,19 @@
 			camera.up.set(0, 1, 0);
 			controls.target.set(0, 0, 0);
 			camera.position.set(200, 100, 250);
-		},	
+		},
 		top_view: function() {
 			guiConfig.cameraMoving = false;
 			controls.target.set(0,0,0);
 			camera.up.set(0,1,0);
-			
 			camera.position.set(0, 200, 0);
-		},	
+		},
 		side_view: function() {
 			guiConfig.cameraMoving = false;
 			camera.up.set(0,1,0);
 			controls.target.set(0,0,0);
 			camera.position.set(200, 5, 0);
-		},		
+		},
 		highlighting: true,
 		opacityDefault: 0.02,
 		opacityHighlight: 0.8,
@@ -53,7 +52,7 @@
 
 // has to be a function because need to rebuild the gui each time new scans are loaded
 // var buildGui = buildGui || {}; // cannot get to work yet...
-	
+
 	function buildGui() {
 		if (gui) {
 		  gui.destroy();
@@ -61,11 +60,10 @@
 		}
 
 		gui = new dat.GUI( );
-		// gui.domElement.style.zIndex = 100;
-		
+
 		guiView = gui.addFolder('Zoom / Rotate / Pan');
 		guiView.open();
-		guiView.add( guiConfig, 'zoom', -50, 50 ).onFinishChange( function() {
+		guiView.add( guiConfig, 'zoom', -50, 50 ).step(1).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			zoomView ( guiConfig.zoom );
 		} );
@@ -73,27 +71,27 @@
 			guiConfig.cameraMoving = false;
 			rotateView( guiConfig.rotate );
 		} );
-		guiView.add( guiConfig, 'pan_Vertical', -50, 50 ).onFinishChange( function() {
+		guiView.add( guiConfig, 'pan_Vertical', -50, 50 ).step(1).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			panView ( 0, guiConfig.pan_Vertical);
-		} );		
-		guiView.add( guiConfig, 'pan_Horizontal', -50, 50 ).onFinishChange( function() {
+		} );
+		guiView.add( guiConfig, 'pan_Horizontal', -50, 50 ).step(1).onFinishChange( function() {
 			guiConfig.cameraMoving = false;
 			panView ( guiConfig.pan_Horizontal, 0);
 		} );
-		
+
 		guiFiles = gui.addFolder('Open Files');
 		guiFiles.add( guiConfig, 'top_view_of_brain' );
 		guiFiles.add( guiConfig, 'right_side_of_brain' );
 		guiFiles.add( guiConfig, 'left_side_of_brain' );
 		guiFiles.add( guiConfig, 'artichoke' );
 		guiFiles.add( guiConfig, 'cactus' );
-		
+
 		guiViews = gui.addFolder('Views');
 		guiViews.add( guiConfig, 'home_view' );
 		guiViews.add( guiConfig, 'top_view' );
 		guiViews.add( guiConfig, 'side_view' );
-		
+
 		guiScans = gui.addFolder('Scans');
 
 		guiScans.add( guiConfig, 'highlighting', true ).onChange( function() {
@@ -127,7 +125,7 @@
 		guiScans.add( guiConfig, 'scansFinish').min(1).max(hack.count).step(1).onChange( function() {
 			var i;
 			for (i = 0, l = hack.count; i < l; i++) {
-				if (scans.children && i < guiConfig.scansStart || i > guiConfig.scansFinish) {scans.children[i].visible = false;
+				if ( (scans.children &&  i < guiConfig.scansStart) || i > guiConfig.scansFinish ) {scans.children[i].visible = false;
 				} else {
 					scans.children[i].visible = true;
 				}
@@ -154,86 +152,106 @@
 		} );
 
 		guiExtras = gui.addFolder('Extras');
-	
 
-		guiExtras.add( guiConfig, 'planeVisible', true ).onChange( function() {
-			if ( !guiConfig.planeVisible) {
-				guiConfig.planeVisible = false;
-				scene.remove( plane );
-			} else {
-				guiConfig.planeVisible = true;
-				if (plane) { scene.remove(plane); }
-				geometry = new THREE.CubeGeometry( 500, 0.1, 500, 10, 10, 10);
-				material = new THREE.MeshNormalMaterial( { wireframe: true } );
-				plane = new THREE.Mesh( geometry, material );
-				plane.position.set(0, hack.meshY, 0);
-				scene.add( plane );
-			}
-		} );
-
-		guiExtras.add( guiConfig, 'boundaryVisible', true ).onChange( function() {
-			if ( !guiConfig.boundaryVisible) {
-				guiConfig.boundaryVisible = false;
-				scene.remove( boundary );
-			} else {
-				guiConfig.boundaryVisible = true;
-				if (boundary) { scene.remove(boundary); }
-				geometry = new THREE.CubeGeometry( 200, 200, 200, 1, 1, 1);
-				material = new THREE.MeshNormalMaterial( { wireframe: true } );
-				boundary = new THREE.Mesh( geometry, material );
-				boundary.rotation.x = hack.angle;
-				boundary.position.set(0, hack.startY + 0.5 * hack.count * hack.deltaY, hack.startZ + 0.5 * hack.count * hack.deltaZ);
-				scene.add( boundary );
-			}
-		} );
-
-		guiExtras.add( guiConfig, 'axisVisible', true ).onChange( function() {
-			if ( !guiConfig.axisVisible) {
-				guiConfig.axisVisible = false;
-				scene.remove( axis );
-			} else {
-				guiConfig.axisVisible = true;
-				axis = new THREE.AxisHelper();
-				axis.position.set( 0, 0, 0 );
-				axis.scale.x = axis.scale.y = axis.scale.z = 0.5;
-				scene.add( axis );
-			}
-		} );
-
-		guiExtras.add( guiConfig, 'markerVisible', true ).onChange( function() {
-			if ( !guiConfig.boxVisible) {
-				guiConfig.boxVisible = false;
-				scene.remove( box );
-			} else {
-				guiConfig.boxVisible = true;
-				geometry = new THREE.CubeGeometry( 20, 20, 20);
-				material = new THREE.MeshNormalMaterial( { wireframe: true } );
-				box = new THREE.Mesh( geometry, material );
-				box.position.set(0, 0, 0);
-				scene.add( box );
-			}
-		} );
+		guiExtras.add( guiConfig, 'planeVisible' ).onChange( togglePlane );
+		guiExtras.add( guiConfig, 'boundaryVisible' ).onChange( toggleBoundary );
+		guiExtras.add( guiConfig, 'axisVisible' ).onChange( toggleAxis );
+		guiExtras.add( guiConfig, 'markerVisible', true ).onChange( toggleMarker );
+		
 		guiExtras.add( guiConfig, 'markerX', -100, 100 ).onChange( function() {
-			if (box) { box.position.x = guiConfig.boxX; }
+			if (box) { box.position.x = guiConfig.markerX; }
 		} );
 		guiExtras.add( guiConfig, 'markerY', -100, 100 ).onChange( function() {
-			if (box) { box.position.y = guiConfig.boxY; }
+			if (box) { box.position.y = guiConfig.markerY; }
 		} );
 		guiExtras.add( guiConfig, 'markerZ', -100, 100 ).onChange( function() {
-			if (box) { box.position.z = guiConfig.boxZ; }
+			if (box) { box.position.z = guiConfig.markerZ; }
 		} );
 
 		guiExtras.add( guiConfig, 'markerScaleX', 0, 5 ).onChange( function() {
-			if (box) { box.scale.x = guiConfig.boxScaleX; }
+			if (box) { box.scale.x = guiConfig.markerScaleX; }
 		} );
 		guiExtras.add( guiConfig, 'markerScaleY', 0, 5 ).onChange( function() {
-			if (box) { box.scale.y = guiConfig.boxScaleY; }
+			if (box) { box.scale.y = guiConfig.markerScaleY; }
 		} );
 		guiExtras.add( guiConfig, 'markerScaleZ', 0, 5 ).onChange( function() {
-			if (box) { box.scale.z = guiConfig.boxScaleZ; }
+			if (box) { box.scale.z = guiConfig.markerScaleZ; }
 		} );
 
 		guiHelp = gui.addFolder('About');
 		guiHelp.add( guiConfig, 'Hide_This_Menu' );
 		guiHelp.add( guiConfig, 'showSplashScreen' );
-	};	
+	}
+
+	function zoomView( y ) {
+		var elm = controls.domElement;
+		mouseEvent( elm, "mousedown", 1 );
+		mouseEvent( elm, "mousemove", 1, 0, -y );
+		mouseEvent( elm, "mouseup", 1 );
+	}
+
+	function rotateView( y ) {
+		var elm = controls.domElement, wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
+		mouseEvent(elm, "mousedown", 0, wiw, wih);
+		mouseEvent(elm, "mousemove", 0, wiw - y, wih);
+		mouseEvent(elm, "mouseup");
+	}
+
+	function panView( x, y ) {
+		var elm = controls.domElement,  wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
+		mouseEvent( elm, "mousedown", 2, wiw, wih );
+		mouseEvent( elm, "mousemove", 2, wiw + x, wih - y );
+		mouseEvent( elm, "mouseup", 2);
+	}
+	
+	function togglePlane() {
+		if ( guiConfig.planeVisible === false) {
+			if ( plane ) { plane.visible = false;	}
+		} else if ( plane ) {
+			plane.visible = true;	
+		} else {
+			geometry = new THREE.CubeGeometry( 500, 0.1, 500, 10, 10, 10);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			plane = new THREE.Mesh( geometry, material );
+			plane.position.set(0, hack.meshY, 0);
+			scene.add( plane );
+		}	
+	}
+	function toggleAxis() {
+		if ( guiConfig.axisVisible === false) {
+			if ( axis ) { axis.visible = false;	}		
+		} else if ( axis ) {
+			axis.visible = true;	
+		} else {
+			axis = new THREE.AxisHelper( 100 );
+			scene.add( axis );			
+		}
+	}
+	
+	function toggleBoundary() {
+		if ( guiConfig.boundaryVisible === false) {
+			if ( boundary ) { boundary.visible = false;	}
+		} else if (boundary) { 
+			boundary.visible = true;
+		} else {
+			geometry = new THREE.CubeGeometry( 200, 200, 200, 1, 1, 1);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			boundary = new THREE.Mesh( geometry, material );
+			boundary.rotation.x = hack.angle;
+			boundary.position.set(0, hack.startY + 0.5 * hack.count * hack.deltaY, hack.startZ + 0.5 * hack.count * hack.deltaZ);
+			scene.add( boundary );
+		}	
+	}
+	
+	function toggleMarker() {
+		if ( guiConfig.markerVisible === false) {
+			if ( box ) { box.visible = false;	}
+		} else if (box) { 
+			box.visible = true;
+		} else {
+			geometry = new THREE.CubeGeometry( 50, 50, 50);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			box = new THREE.Mesh( geometry, material );
+			scene.add( box );
+		}	
+	}

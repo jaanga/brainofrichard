@@ -51,13 +51,13 @@
 	'<h1>The Brain of Richard App<\/h1>' +
 	'<p>3D compilations of hundreds of 2D scanned MRI images<\/p>' +
 	'<p>Built by Richard and Theo' +
-	'<br><b>~</b><\/p>' +
+	'<br\/><b>~<\/b><\/p>' +
 	'<p>If mouse: click and drag in screen to update view' +
-	'<br>If no mouse: Click zoom, rotate & pan in side menu<br>~' +
+	'<br\/>If no mouse: Click zoom, rotate & pan in side menu<br>~' +
 	'<br>Cursor keys: highlight individual scans' +
-	'<br>~</p>' +
-	'Veggie scans courtesy of <a href="http://insideinsides.blogspot.com/" target="_blank">Inside Insides</a>' +
-	'<br><b>~</b><\/p>' +
+	'<br>~<\/p>' +
+	'Veggie scans courtesy of <a href="http://insideinsides.blogspot.com/" target="_blank">Inside Insides<\/a>' +
+	'<br><b>~<\/b><\/p>' +
 	'<p>Launch the 90 second demo...<\/p>';
 	splash.innerHTML = splashText;
 
@@ -68,6 +68,26 @@
 	audioElement.controls = 'true';
 	var demo, playingDemo = false;
 	var whichDemoApp = function(){ return;};
+	
+	audioElement.addEventListener("click", function() {
+		if ( playingDemo ) {playingDemo = false;}
+	}, false);
+	
+	audioElement.addEventListener("playing", function() {
+		if (!demo) { 
+			loadScript('brainDemo.js'); 
+		} else { 
+			demo.style.display = 'block'; 
+		}
+		playingDemo = true;
+	}, false);
+
+	function loadScript(fname) {
+		var js = document.createElement('script');
+		js.setAttribute('type', 'text/javascript');
+		js.setAttribute('src', fname);
+		document.body.appendChild(js);
+	}	
 
 	var scene, camera, controls, light, stats, renderer;
 	var geometry, map, material, mesh;
@@ -164,7 +184,7 @@
 		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
 		scans = new THREE.Object3D();
 		scans.current = 0;
-		for (var i = 1, l = hack.count; i <= l; i++) {
+		for ( var i = 1, l = hack.count; i <= l; i++ ) {
 			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
 			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
 			mesh = new THREE.Mesh( geometry, material );
@@ -187,7 +207,7 @@
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 10, 10000 );
-        camera.position.set(200, 100, 250);
+        camera.position.set( 200, 100, 250 );
         scene.add( camera );
 
 		controls = new THREE.TrackballControls( camera, renderer.domElement );
@@ -266,6 +286,5 @@
 		}
 	};	
 </script>
-<script src="brainDemo.js"></script>
 </body>
 </html>

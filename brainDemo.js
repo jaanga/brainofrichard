@@ -5,7 +5,7 @@
 	demo.style.borderRadius = '10px';
 	demo.style.boxShadow = '10px 10px 5px #888888';
 	demo.style.color = '#000';
-	demo.style.display = 'none';
+	// demo.style.display = 'none';
 	demo.style.right = '300px';
 	demo.style.opacity = '0.85';
 	demo.style.padding = '0 15px 15px 15px';
@@ -15,26 +15,6 @@
 	demo.style.top = '48px';
 	demo.style.width = '300px';
 	var demoText = '<h3 style="text-align:right;"><a href="#" title="Click to close" onClick="demo.style.display = \'none\'" style="color:#888;text-decoration:none;">[X]<\/a><\/h3>';
-
-	
-	audioElement.addEventListener("click", function() {
-		if ( playingDemo ) {playingDemo = false;}
-		if (demo) { demo.style.display = 'none'; }
-	}, false);
-
-	audioElement.addEventListener("playing", function() {
-		loadScript('brainDemo.js');
-		playingDemo = true;
-		demo.style.display = 'block';
-	}, false);
-	
-	function loadScript(fname) {
-		var js = document.createElement('script');
-		js.setAttribute('type', 'text/javascript');
-		js.setAttribute('src', fname);
-		document.body.appendChild(js);
-	}
-
 
 	audioElement.addEventListener("timeupdate", function() {
 		var duration = document.getElementById('duration'),
@@ -46,6 +26,7 @@
 			text = 'Welcome to the Brain of Richard demo!' +
 			'<br><br>With your mouse on screen...' +
 			'<br><br>or by clicking on right-side menu...';	
+			
 		} else if (tim === 8 ) {
 			text = 'You can zoom in and out.';
 			whichDemoApp = brainDemo.zoomBrain;	
@@ -57,11 +38,12 @@
 			whichDemoApp = brainDemo.panBrain;
 		} else if (tim === 19 ) {
 			whichDemoApp = function(){ return; };
-			text = 'The \'Open Files\' menu lets you open different set of scan files'
+			text = 'The \'Open Files\' menu lets you open different set of scan files.';
 			brainDemo.openMenu(guiFiles, guiView);
 		} else if (tim === 24 ) {
 			whichDemoApp = function(){ return; };
-			text = 'The file named \'Right_side_of_brain\' is of particular interest.'
+			text = 'The file named \'Right_side_of_brain\' is of particular interest.' +
+			'<br><br>For a very different exprience: Have a look at cactus and artichoke';
 		} else if (tim === 28) {
 			text = 'The \'Views\' menu enables you to jump to different views...';
 			brainDemo.openMenu(guiViews,guiFiles);
@@ -76,7 +58,7 @@
 			'<br><br>Use this menu if you ever get lost in space...';
 			guiConfig.home_view();
 		} else if (tim === 42 ) {
-			text = 'The \'Scans\' menu allows you to toggle the highlighting on and off';
+			text = 'The \'Scans\' menu allows you to toggle the highlighting on and off.';
 			brainDemo.openMenu(guiScans,guiViews);
 			whichDemoApp = brainDemo.highlightScans;
 		} else if (tim === 47 ) {
@@ -86,34 +68,78 @@
 			guiConfig.highlighting = false;
 			playingDemo = false;
 			guiConfig.cameraMoving = true;
-			text = 'The \'Camera\' menu allows you to toggle the automatic camera motion.'
+			text = 'The \'Camera\' menu allows you to toggle the automatic camera motion.';
 			brainDemo.openMenu(guiCamera,guiScans);
 		} else if (tim === 56) {
-			text = 'You can also set camera cutoffs. This allows for views that cut through the scans at oblique angles.'
+			text = 'You can also set camera cutoffs. This allows for views that cut through the scans at oblique angles.';
 		} else if (tim === 63) {
 			playingDemo = true;
 			guiConfig.cameraMoving = false;		
-			text = 'The \'Extras\' menu toggles the display of four different viewing aids.'
+			text = 'The \'Extras\' menu toggles the display of four different viewing aids.';
 			brainDemo.openMenu(guiExtras,guiCamera);
-		} else if (tim === 65 ) {
+		} else if (tim === 64 ) {
+			guiConfig.planeVisible = true;
+			togglePlane();
 			text = 'The display aids are:<ul>' +
 			'<li>Ground plane</li>' +
 			'<li>Bounding box</li>' +
 			'<li>3D axis indicator</li>' +
 			'<li>Marker box for highlighting items of interest</li></ul>';
+		} else if (tim === 65 ) {
+			guiConfig.planeVisible = false;
+			togglePlane();
+		} else if (tim === 66 ) {
+			guiConfig.planeVisible = true;
+			togglePlane();
+		} else if (tim === 67 ) {
+			guiConfig.boundaryVisible = true;
+			toggleBoundary();
+		} else if (tim === 68 ) {
+			guiConfig.boundaryVisible = false;
+			toggleBoundary();
+		} else if (tim === 69 ) {
+			guiConfig.boundaryVisible = true;
+			toggleBoundary();
+
+		} else if (tim === 70 ) {
+			guiConfig.axisVisible = true;
+			toggleAxis();
+		} else if (tim === 71 ) {
+			guiConfig.axisVisible = false;
+			toggleAxis();
+		} else if (tim === 72 ) {
+			guiConfig.axisVisible = true;
+			toggleAxis();
+			
+		} else if (tim === 73 ) {
+			guiConfig.markerVisible = true;
+			toggleMarker();		
 		} else if (tim === 75 ) {
-			text = 'The \'Help\' menu reminds you that you can press \'h\' to hide this menu';
+			guiConfig.planeVisible = false;
+			togglePlane();		
+			guiConfig.boundaryVisible = false;
+			toggleBoundary();		
+			guiConfig.axisVisible = false;
+			toggleAxis();
+			guiConfig.markerVisible = false;
+			toggleMarker();			
+			text = 'The \'Help\' menu reminds you that you can press \'h\' to hide this menu.';
 			brainDemo.openMenu(guiHelp,guiExtras);
 		} else if (tim === 80 ) {
 			// whichDemoApp = function(){ return; };
+			if ( playingDemo ) { brainDemo.toggleSplash(); }
 			text = 'You can also display the splash screen from here.';
+		} else if (tim === 81 ) {
+			if ( playingDemo ) { brainDemo.toggleSplash(); }
+		} else if (tim === 82 ) {
+			if ( playingDemo ) { brainDemo.toggleSplash(); }
+		} else if (tim === 83 ) {
+			splash.style.display = 'block';			
 		} else if (tim === 84 ) {
 			text = 'Thanks for watching.' +
 		'<br><br>Happy brain examining!';
 			brainDemo.openMenu(guiView,guiHelp);
 			whichDemoApp = brainDemo.finish;
-		} else {
-
 		}
 		if (text) { demo.innerHTML = demoText + text; }
 	}, false);
@@ -125,12 +151,13 @@
 	brainDemo.object = '';
 	brainDemo.status = document.getElementById('status');
 
-	brainDemo.hideSplash = function() {
-		splash.style.display = 'none';
-		replay_is_on = false;
-		audioElement.pause();
+	brainDemo.toggleSplash = function() {
+		if ( splash.style.display === 'block' ) {
+			splash.style.display = 'none';
+		} else {
+			splash.style.display = 'block';
+		}		
 	};
-// brainDemo.hideSplash();
 	
 /*
 	brainDemo.theo = function() {
@@ -258,11 +285,12 @@
 	brainDemo.openMenu  = function(menuOpen, menuClose) {
 		if (menuClose) { menuClose.close(); }
 		menuOpen.open();
-	}
+	};
 	
 	brainDemo.finish = function() {
 		scans.rotation.y = 0;
-		scans.scale.x = scans.scale.y = scans.scale.z = 1;
+		// scans.scale.x = scans.scale.y = scans.scale.z = 1;
+		scans.scale.set (1, 1, 1);
 		scans.position.z = 0;
 		guiConfig.home_view();
 		guiConfig.highlighting = true;
@@ -307,25 +335,4 @@
 		e.button, document.body.parentNode);
 		element.dispatchEvent(evt);
 		return evt;
-	}
-
-	function zoomView( y ) {
-		var elm = controls.domElement;
-		mouseEvent( elm, "mousedown", 1 );
-		mouseEvent( elm, "mousemove", 1, 0, -y );
-		mouseEvent( elm, "mouseup", 1 );
-	}
-
-	function rotateView( y ) {
-		var elm = controls.domElement, wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
-		mouseEvent(elm, "mousedown", 0, wiw, wih);
-		mouseEvent(elm, "mousemove", 0, wiw - y, wih);
-		mouseEvent(elm, "mouseup");
-	}
-
-	function panView( x, y ) {
-		var elm = controls.domElement,  wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
-		mouseEvent( elm, "mousedown", 2, wiw, wih );
-		mouseEvent( elm, "mousemove", 2, wiw + x, wih - y );
-		mouseEvent( elm, "mouseup", 2);
 	}
