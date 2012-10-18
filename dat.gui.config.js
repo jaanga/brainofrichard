@@ -12,8 +12,8 @@
 		cactus: function() { brainHack(5); },
 		home_view: function() {
 			guiConfig.cameraMoving = false;
-			camera.up.set(0, 1, 0);
 			controls.target.set(0, 0, 0);
+			camera.up.set(0, 1, 0);
 			camera.position.set(200, 100, 250);
 		},
 		top_view: function() {
@@ -263,3 +263,23 @@
 			splash.style.display = 'block';
 		}		
 	};	
+	
+	function mouseEvent(element, type, button, cx, cy ) {
+		var evt,
+		e = {
+			bubbles: true, cancelable: (type !== "mousemove"), view: window, detail: 0,
+			screenX: 0, screenY: 0, clientX: cx, clientY: cy,
+			ctrlKey: false, altKey: false, shiftKey: false, metaKey: false,
+			button: button, relatedTarget: undefined
+		};
+		button = button || 0;
+		cx = cx || 0;
+		cy = cy || 0;
+		evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent(type, e.bubbles, e.cancelable, e.view, e.detail,
+		e.screenX, e.screenY, e.clientX, e.clientY,
+		e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+		e.button, document.body.parentNode);
+		element.dispatchEvent(evt);
+		return evt;
+	}	

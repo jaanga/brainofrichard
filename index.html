@@ -65,14 +65,22 @@
 // See brainDemo.js for the demo code.	
 	var audioElement = document.createElement('audio');
 	splash.appendChild( audioElement );
-	audioElement.setAttribute('src', 'brain-of-richard.ogg');
+	
+	if (!!(audioElement.canPlayType && audioElement.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''))) {
+		audioElement.src = 'brain-of-richard.ogg';
+	} else {
+		audioElement.setAttribute('src', 'brain-of-richard.mp3');
+	}
+	
+	audioElement.style.width = '300px';
 	audioElement.controls = 'true';
+	
 	var demo, playingDemo = false;
 	var whichDemoApp = function(){ return;};
 	
-	audioElement.addEventListener("click", function() {
-		if ( playingDemo ) {playingDemo = false;}
-	}, false);
+	//audioElement.addEventListener("click", function() {
+		// if ( playingDemo ) {playingDemo = false;}
+	//}, false);
 	
 	audioElement.addEventListener("playing", function() {
 		if (!demo) { 
@@ -80,7 +88,7 @@
 		} else { 
 			demo.style.display = 'block'; 
 		}
-		playingDemo = true;
+		// playingDemo = true;
 	}, false);
 
 	function loadScript(fname) {
@@ -237,13 +245,13 @@
         renderer.render( scene, camera );
 
 		var tim = clock.elapsedTime;
-		if (!mouseMove && !playingDemo && guiConfig.cameraMoving) {
-		// if (!mouseMove && guiConfig.cameraMoving) {
+		// if (!mouseMove && !playingDemo && guiConfig.cameraMoving) {
+		if ( !mouseMove && guiConfig.cameraMoving === true) {
 			camera.position.x += -1 * Math.cos( tim * 0.15);
 			camera.position.z += -1 * Math.sin( tim * 0.15);	
-		} else if ( playingDemo) {
+		} else if ( playingDemo ) {
 			if (typeof whichDemoApp === 'function') {
-				whichDemoApp();
+				whichDemoApp();		
 			} else {
 				whichDemoApp;  // slow speed
 			}	

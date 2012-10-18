@@ -22,14 +22,20 @@
 			m = parseInt((audioElement.currentTime / 60) % 60, 10),
 			tim = + audioElement.currentTime.toFixed(),
 			text;
+
+
 		if ( tim === 0) {
+			playingDemo = true;
+			guiConfig.cameraMoving = false;
+			guiConfig.highlighting = false;		
+			guiConfig.home_view();
 			text = 'Welcome to the Brain of Richard demo!' +
 			'<br><br>With your mouse on screen...' +
 			'<br><br>or by clicking on right-side menu...';	
 			
-		} else if (tim === 8 ) {
+		} else if (tim === 5 ) {
 			text = 'You can zoom in and out.';
-			whichDemoApp = brainDemo.zoomBrain;	
+			whichDemoApp = brainDemo.zoomBrain; 
 		} else if (tim === 11 ) {
 			text = 'You can rotate the scans.';
 			whichDemoApp = brainDemo.rotateBrain;
@@ -43,7 +49,7 @@
 		} else if (tim === 24 ) {
 			whichDemoApp = function(){ return; };
 			text = 'The file named \'Right_side_of_brain\' is of particular interest.' +
-			'<br><br>For a very different exprience: Have a look at cactus and artichoke';
+			'<br><br>For a very different experience: have a look at cactus and artichoke.';
 		} else if (tim === 28) {
 			text = 'The \'Views\' menu enables you to jump to different views...';
 			brainDemo.openMenu(guiViews,guiFiles);
@@ -62,18 +68,17 @@
 			brainDemo.openMenu(guiScans,guiViews);
 			whichDemoApp = brainDemo.highlightScans;
 		} else if (tim === 47 ) {
-			text = 'With highlighting on, individual scans highlight as you move over them.';
+			text = 'With highlighting on, individual scans highlight as you move over them.' +
+			'<br><br>You can also use the cursor keys to highlight the scans...'
 		} else if (tim === 52 ) {
 			whichDemoApp = function(){ return; };
 			guiConfig.highlighting = false;
-			playingDemo = false;
 			guiConfig.cameraMoving = true;
 			text = 'The \'Camera\' menu allows you to toggle the automatic camera motion.';
 			brainDemo.openMenu(guiCamera,guiScans);
 		} else if (tim === 56) {
 			text = 'You can also set camera cutoffs. This allows for views that cut through the scans at oblique angles.';
 		} else if (tim === 63) {
-			playingDemo = true;
 			guiConfig.cameraMoving = false;		
 			text = 'The \'Extras\' menu toggles the display of four different viewing aids.';
 			brainDemo.openMenu(guiExtras,guiCamera);
@@ -91,6 +96,7 @@
 		} else if (tim === 66 ) {
 			guiConfig.planeVisible = true;
 			togglePlane();
+			
 		} else if (tim === 67 ) {
 			guiConfig.boundaryVisible = true;
 			toggleBoundary();
@@ -126,13 +132,12 @@
 			text = 'The \'Help\' menu reminds you that you can press \'h\' to hide this menu.';
 			brainDemo.openMenu(guiHelp,guiExtras);
 		} else if (tim === 80 ) {
-			// whichDemoApp = function(){ return; };
-			if ( playingDemo ) { toggleSplash(); }
+			if ( !mouseMove ) { toggleSplash(); }
 			text = 'You can also display the splash screen from here.';
 		} else if (tim === 81 ) {
-			if ( playingDemo ) { toggleSplash(); }
+			if ( !mouseMove ) { toggleSplash(); }
 		} else if (tim === 82 ) {
-			if ( playingDemo ) { toggleSplash(); }
+			if ( !mouseMove ) { toggleSplash(); }
 		} else if (tim === 83 ) {
 			splash.style.display = 'block';			
 		} else if (tim === 84 ) {
@@ -151,7 +156,87 @@
 	brainDemo.object = '';
 	brainDemo.status = document.getElementById('status');
 	
+	brainDemo.zoomBrain = function() {
+		if ( brainDemo.currentApp !== 'zoomBrain' ) { 
+			brainDemo.currentApp = 'zoomBrain';
+			brainDemo.i = 0;
+			brainDemo.delta = 1; 
+		}
+		brainDemo.i += brainDemo.delta; 
+		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
+		zoomView( brainDemo.delta * 20);
+	};
+	
+	brainDemo.rotateBrain = function() {
+		if ( brainDemo.currentApp !== 'rotateBrain' ) {
+			brainDemo.currentApp = 'rotateBrain';		
+			brainDemo.i = 0;
+			brainDemo.delta = -1;
+		}
+		rotateView(brainDemo.i);
+		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
+		brainDemo.i += brainDemo.delta; 
+	};
+	
+	brainDemo.panBrain = function() {
+		if ( brainDemo.currentApp !== 'panBrain' ) {
+			brainDemo.currentApp = 'panBrain';
+			brainDemo.i = 0;
+			brainDemo.delta = 1;
+		}
+		panView(brainDemo.i, 0);
+		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
+		brainDemo.i += brainDemo.delta; 
+	};
+
+	brainDemo.highlightScans = function(id, color) {
+		if ( brainDemo.currentApp !== 'highlightId' ) {
+			brainDemo.currentApp = 'highlightId';
+			brainDemo.i = 0;
+			brainDemo.delta = 1;
+		}
+		brainApp.scanHighlight(brainDemo.i);
+		if (Math.abs(brainDemo.i) > 25) { brainDemo.delta = - brainDemo.delta;  }
+		brainDemo.i += brainDemo.delta; 
+	};
+
+	brainDemo.finish = function() {
+		guiConfig.home_view();
+		guiConfig.highlighting = true;
+		whichDemoApp = function(){ return; };
+		playingDemo = false;
+		return;
+	};
+	
+	brainDemo.openMenu  = function(menuOpen, menuClose) {
+		if (menuClose) { menuClose.close(); }
+		menuOpen.open();
+	};
+	
+	
 /*
+	function createText(text, fontSize, width, height, color, backgroundColor, shadowColor, shadowBlur) {
+		var canvas = document.createElement("canvas");
+		if (width) { canvas.width = width; }
+		if (height) { canvas.height = height; }
+		var context = canvas.getContext("2d");
+		if (backgroundColor) { context.fillStyle = backgroundColor; } else { context.fillStyle = '#ffffff'; }
+		context.fillRect( 0, 0, width, height );
+		if (color) { context.fillStyle = color; } else { context.fillStyle = '#000000'; }
+		context.globalAlpha = 0.8;
+		if (shadowColor) {context.shadowColor = shadowColor; }
+		if (shadowBlur) { context.shadowBlur = shadowBlur; } else { context.shadowBlur = 10; }
+		if (fontSize) { context.font = fontSize + "pt Arial bold"; } else {context.font = "24pt Arial bold"; }
+		context.textBaseline = 'top';
+		context.fillText(text, 0, 0);
+		var map = new THREE.Texture( canvas );
+		map.needsUpdate = true;
+		return new THREE.MeshBasicMaterial( { map: map, transparent: true } );
+	}
+
+
+// bits from an early demo
+
 	brainDemo.theo = function() {
 		if ( brainDemo.currentApp !== 'theo' ) {
 			brainDemo.i = 50;
@@ -191,7 +276,6 @@
 			brainDemo.status.innerHTML = 'Eventually we will have a 3D view of Richard to wrap around this brain';
 		}
 	};
-*/
 
 	brainDemo.showScans = function() {
 		if ( brainDemo.currentApp !== 'showScans' ) {
@@ -219,112 +303,4 @@
 		var rot = brainDemo.object.rotation;
 		rot.set( rot.x += 0.01, rot.y += 0.01, rot.z += 0.01);
 	};
-
-	brainDemo.zoomBrain = function() {
-		if ( brainDemo.currentApp !== 'zoomBrain' ) {
-			brainDemo.currentApp = 'zoomBrain';
-			if (brainDemo.object) {
-				scene.remove(brainDemo.object);
-			}
-			brainDemo.i = 0;
-			brainDemo.delta = 1;
-			guiConfig.highlighting = false;
-		}
-		zoomView(brainDemo.i);
-		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
-		brainDemo.i += brainDemo.delta; 
-	};
-	
-	brainDemo.rotateBrain = function() {
-		if ( brainDemo.currentApp !== 'rotateBrain' ) {
-			brainDemo.currentApp = 'rotateBrain';
-			if (brainDemo.object) {
-				scene.remove(brainDemo.object);
-			}			
-			brainDemo.i = 0;
-			brainDemo.delta = -1;
-			guiConfig.highlighting = false;
-		}
-		rotateView(brainDemo.i);
-		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
-		brainDemo.i += brainDemo.delta; 
-	};
-	
-	brainDemo.panBrain = function() {
-		if ( brainDemo.currentApp !== 'panBrain' ) {
-			brainDemo.currentApp = 'panBrain';
-			brainDemo.i = 0;
-			brainDemo.delta = 1;
-			guiConfig.highlighting = false;
-
-		}
-		panView(brainDemo.i, 0);
-		if (Math.abs(brainDemo.i) > 20) { brainDemo.delta = - brainDemo.delta;  }
-		brainDemo.i += brainDemo.delta; 
-	};
-
-	brainDemo.highlightScans = function(id, color) {
-		if ( brainDemo.currentApp !== 'highlightId' ) {
-			brainDemo.currentApp = 'highlightId';
-			brainDemo.i = 0;
-			brainDemo.delta = 1;
-		}
-		brainApp.scanHighlight(brainDemo.i);
-		if (Math.abs(brainDemo.i) > 25) { brainDemo.delta = - brainDemo.delta;  }
-		brainDemo.i += brainDemo.delta; 
-	};
-	
-	brainDemo.openMenu  = function(menuOpen, menuClose) {
-		if (menuClose) { menuClose.close(); }
-		menuOpen.open();
-	};
-	
-	brainDemo.finish = function() {
-		scans.rotation.y = 0;
-		// scans.scale.x = scans.scale.y = scans.scale.z = 1;
-		scans.scale.set (1, 1, 1);
-		scans.position.z = 0;
-		guiConfig.home_view();
-		guiConfig.highlighting = true;
-		whichDemoApp = function(){ return; };
-		return;
-	};
-
-	function createText(text, fontSize, width, height, color, backgroundColor, shadowColor, shadowBlur) {
-		var canvas = document.createElement("canvas");
-		if (width) { canvas.width = width; }
-		if (height) { canvas.height = height; }
-		var context = canvas.getContext("2d");
-		if (backgroundColor) { context.fillStyle = backgroundColor; } else { context.fillStyle = '#ffffff'; }
-		context.fillRect( 0, 0, width, height );
-		if (color) { context.fillStyle = color; } else { context.fillStyle = '#000000'; }
-		context.globalAlpha = 0.8;
-		if (shadowColor) {context.shadowColor = shadowColor; }
-		if (shadowBlur) { context.shadowBlur = shadowBlur; } else { context.shadowBlur = 10; }
-		if (fontSize) { context.font = fontSize + "pt Arial bold"; } else {context.font = "24pt Arial bold"; }
-		context.textBaseline = 'top';
-		context.fillText(text, 0, 0);
-		var map = new THREE.Texture( canvas );
-		map.needsUpdate = true;
-		return new THREE.MeshBasicMaterial( { map: map, transparent: true } );
-	}
-
-	function mouseEvent(element, type, button, cx, cy ) {
-		var evt,
-		e = {
-			bubbles: true, cancelable: (type !== "mousemove"), view: window, detail: 0,
-			screenX: 0, screenY: 0, clientX: cx, clientY: cy,
-			ctrlKey: false, altKey: false, shiftKey: false, metaKey: false,
-			button: button, relatedTarget: undefined
-		};
-		button = button || 0;
-		cx = cx || 0;
-		cy = cy || 0;
-		evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent(type, e.bubbles, e.cancelable, e.view, e.detail,
-		e.screenX, e.screenY, e.clientX, e.clientY,
-		e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-		e.button, document.body.parentNode);
-		element.dispatchEvent(evt);
-		return evt;
-	}
+*/
