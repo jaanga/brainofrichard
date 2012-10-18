@@ -31,7 +31,7 @@
 			guiConfig.home_view();
 			text = 'Welcome to the Brain of Richard demo!' +
 			'<br><br>With your mouse on screen...' +
-			'<br><br>or by clicking on right-side menu...';	
+			'<br><br>or by clicking repeatedly in the right-side menu...';	
 			
 		} else if (tim === 5 ) {
 			text = 'You can zoom in and out.';
