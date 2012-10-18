@@ -127,17 +127,17 @@
 			brainDemo.openMenu(guiHelp,guiExtras);
 		} else if (tim === 80 ) {
 			// whichDemoApp = function(){ return; };
-			if ( playingDemo ) { brainDemo.toggleSplash(); }
+			if ( playingDemo ) { toggleSplash(); }
 			text = 'You can also display the splash screen from here.';
 		} else if (tim === 81 ) {
-			if ( playingDemo ) { brainDemo.toggleSplash(); }
+			if ( playingDemo ) { toggleSplash(); }
 		} else if (tim === 82 ) {
-			if ( playingDemo ) { brainDemo.toggleSplash(); }
+			if ( playingDemo ) { toggleSplash(); }
 		} else if (tim === 83 ) {
 			splash.style.display = 'block';			
 		} else if (tim === 84 ) {
 			text = 'Thanks for watching.' +
-		'<br><br>Happy brain examining!';
+			'<br><br>Happy brain examining!';
 			brainDemo.openMenu(guiView,guiHelp);
 			whichDemoApp = brainDemo.finish;
 		}
@@ -150,14 +150,6 @@
 	brainDemo.delta = 0;
 	brainDemo.object = '';
 	brainDemo.status = document.getElementById('status');
-
-	brainDemo.toggleSplash = function() {
-		if ( splash.style.display === 'block' ) {
-			splash.style.display = 'none';
-		} else {
-			splash.style.display = 'block';
-		}		
-	};
 	
 /*
 	brainDemo.theo = function() {

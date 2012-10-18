@@ -255,3 +255,11 @@
 			scene.add( box );
 		}	
 	}
+	
+	function toggleSplash() {
+		if ( splash.style.display === 'block' ) {
+			splash.style.display = 'none';
+		} else {
+			splash.style.display = 'block';
+		}		
+	};	
