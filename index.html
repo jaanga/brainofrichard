@@ -58,7 +58,8 @@
 	'<br>Cursor keys: highlight individual scans' +
 	'<br>~<\/p>' +
 	'Veggie scans courtesy of <a href="http://insideinsides.blogspot.com/" target="_blank">Inside Insides<\/a>' +
-	'<br><b>~<\/b><\/p>' +
+	'<br><b>~<\/b><br>' +
+	'<a href="#" onclick="guiConfig.cameraMoving = false;">stop camera</a></p>' +
 	'<p>Launch the 90 second demo...<\/p>';
 	splash.innerHTML = splashText;
 
@@ -260,10 +261,21 @@
     }
 
 	function onDocumentMouseMove( event ) { // needs work
+		var mouse = { x: -1, y: -1 };
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
+		var projector = new THREE.Projector();
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, camera );
+		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		var intersects = raycaster.intersectObjects( scans.children );	
+/*		
 		var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 		projector.unprojectVector( vector, camera );
-		var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() ),
+		var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() ),
 			intersects = ray.intersectObjects( scans.children );
+*/		
+		
 		if ( intersects.length > 0 ) {
 			if ( guiConfig.highlighting && intersected !== intersects[ 0 ].object ) {
 				if ( intersected ) { intersected.material.opacity = guiConfig.opacityDefault; }
