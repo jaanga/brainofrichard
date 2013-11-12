@@ -1,10 +1,18 @@
 The Brain of Richard
 ====================
+_3D compilations of hundreds of 2D scanned MRI images_
 
-Live Demo: http://jaanga.github.io/brainofrichard/
+## Live Demo
+
+<http://jaanga.github.io/brainofrichard/>
+
+Source:
+<https://github.com/jaanga/brain0frichard/>
 
 
-3D compilations of hundreds of 2D scanned MRI images
+
+
+
 
 Built by Richard and Theo
 
