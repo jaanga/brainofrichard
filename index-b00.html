@@ -8,10 +8,10 @@
 <body>
 
 <script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
-<script src="http://mrdoob.github.com/three.js/examples/js/controls/OrbitControls.js"></script>
+<script src="http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js"></script>
 <script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
 <script src="http://mrdoob.github.com/three.js/examples/js/Detector.js"></script>
-<script src="http://mrdoob.github.com/three.js/examples/js/libs/dat.gui.min.js"></script>
+<script src="http://dat-gui.googlecode.com/git/build/dat.gui.min.js"></script>
 <!--
 <script src='../../three.js/build/three.min.js'></script>
 <script src='../../three.js/examples/js/Detector.js'></script>
@@ -63,45 +63,41 @@
 	'<p>Launch the 90 second demo...<\/p>';
 	splash.innerHTML = splashText;
 
-// See brainDemo.js for the demo code.
+// See brainDemo.js for the demo code.	
 	var audioElement = document.createElement('audio');
 	splash.appendChild( audioElement );
-
+	
 	if (!!(audioElement.canPlayType && audioElement.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''))) {
 		audioElement.src = 'brain-of-richard.ogg';
 	} else {
 		audioElement.setAttribute('src', 'brain-of-richard.mp3');
 	}
-
+	
 	audioElement.style.width = '300px';
 	audioElement.controls = 'true';
-
+	
 	var demo, playingDemo = false;
-	var whichDemoApp = function(){ return; };
-
+	var whichDemoApp = function(){ return;};
+	
 	//audioElement.addEventListener("click", function() {
 		// if ( playingDemo ) {playingDemo = false;}
 	//}, false);
-
+	
 	audioElement.addEventListener("playing", function() {
-
-		if (!demo) {
-			loadScript('brainDemo.js');
-		} else {
-			demo.style.display = 'block';
+		if (!demo) { 
+			loadScript('brainDemo.js'); 
+		} else { 
+			demo.style.display = 'block'; 
 		}
 		// playingDemo = true;
-
 	}, false);
 
 	function loadScript(fname) {
-
 		var js = document.createElement('script');
 		js.setAttribute('type', 'text/javascript');
 		js.setAttribute('src', fname);
 		document.body.appendChild(js);
-
-	}
+	}	
 
 	var scene, camera, controls, light, stats, renderer;
 	var geometry, map, material, mesh;
@@ -110,11 +106,10 @@
 	var projector;
 	var intersected;
 	var mouseMove;
-	var raycaster;
+
 	var scans, plane, boundary, axis, box;
 
-// pardon the jumble below, a combination of an alpha app and insufficient JavaScript object experience
-
+// pardon the jumble below, a combination of an alpha app and insufficient JavaScript object experience	
 	var hack = {};
 	function brainHack(count) {
 		if (count === 1) {
@@ -155,7 +150,7 @@
 				opacityDefault: 0.02,
 				meshY: -100
 			};
-		}
+		}	
 		if (count === 4 ) {
 			hack = {
 				count: 194,
@@ -167,7 +162,7 @@
 				deltaZ: -1,
 				opacityDefault: 0.2,
 				meshY: -100
-			};
+			};	
 		}
 		if (count === 5 ) {
 			hack = {
@@ -180,8 +175,8 @@
 				deltaZ: -2,
 				opacityDefault: 0.1,
 				meshY: -100
-			};
-		}
+			};	
+		}		
 		if ( count > 1 ) {
 			guiConfig.cameraMoving = false;
 			guiConfig.highlighting = false;
@@ -190,52 +185,42 @@
 		guiConfig.scansFinish = hack.count;
 		brainApp.buildBrain();
 		buildGui();
-
 	}
 
 	var brainApp = brainApp || {};
 
 	brainApp.buildBrain = function() {
-
-		if ( scans ) { scene.remove( scans ); }
-
-		geometry = new THREE.PlaneBufferGeometry( 200, 200, 1, 1 );
+		if ( scans ) { scene.remove(scans); }
+		geometry = new THREE.PlaneGeometry( 200, 200, 10, 10 );
 		scans = new THREE.Object3D();
 		scans.current = 0;
-
-		for ( var i = 0; i < hack.count; i++ ) {
-
-			map = THREE.ImageUtils.loadTexture( hack.dir + ( i + 1 ) + '.png' );
-			map.minFilter = map.magFilter = THREE.NearestFilter;
-//			map.needsUpdate = true;
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
+		for ( var i = 1, l = hack.count; i <= l; i++ ) {
+			map = THREE.ImageUtils.loadTexture( hack.dir + i + '.png' );
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff, ambient: 0xffffffff, map: map, opacity: hack.opacityDefault, side: THREE.DoubleSide, transparent: true, wireframe: false} );
 			mesh = new THREE.Mesh( geometry, material );
 			mesh.rotation.x = hack.angle;
 			mesh.position.set(0, hack.startY + i * hack.deltaY, hack.startZ + i * hack.deltaZ);
 			scans.add( mesh );
-
 		}
-
 		scene.add( scans );
-
 	};
 
 	init();
+	brainHack( 1 );
 	animate();
 
-	function init() {
+    function init() {
+        renderer = new THREE.WebGLRenderer( {alpha: 1, antialias: true, clearColor: 0xffffff } );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
 
-		renderer = new THREE.WebGLRenderer( {alpha: 1, antialias: true, clearColor: 0xffffff } );
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		document.body.appendChild( renderer.domElement );
+        scene = new THREE.Scene();
 
-		scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 10, 10000 );
+        camera.position.set( 200, 100, 250 );
+        scene.add( camera );
 
-		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 10, 10000 );
-		camera.position.set( 200, 100, 250 );
-		scene.add( camera );
-
-		controls = new THREE.OrbitControls( camera, renderer.domElement );
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
 		controls.maxDistance = 800;
 
 		stats = new Stats();
@@ -244,76 +229,53 @@
 		stats.domElement.style.zIndex = 100;
 		document.body.appendChild( stats.domElement );
 
-//		projector = new THREE.Projector();
-		raycaster = new THREE.Raycaster();
+		projector = new THREE.Projector();
 
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 		document.addEventListener( 'keydown', onKeyDown, false );
-
-		brainHack( 1 );
-
     }
 
     function animate() {
-
-		requestAnimationFrame( animate );
-		render();
+        requestAnimationFrame( animate );
+        render();
 		stats.update();
-	}
+    }
 
     function render() {
-
 		controls.update( clock.getDelta() );
         renderer.render( scene, camera );
 
 		var tim = clock.elapsedTime;
 		// if (!mouseMove && !playingDemo && guiConfig.cameraMoving) {
-
 		if ( !mouseMove && guiConfig.cameraMoving === true) {
-
 			camera.position.x += -1 * Math.cos( tim * 0.15);
-			camera.position.z += -1 * Math.sin( tim * 0.15);
-
+			camera.position.z += -1 * Math.sin( tim * 0.15);	
 		} else if ( playingDemo ) {
-
 			if (typeof whichDemoApp === 'function') {
-
-				whichDemoApp();
-
+				whichDemoApp();		
 			} else {
-
 				whichDemoApp;  // slow speed
-
-			}
-
+			}	
 		}
-
 		mouseMove = false;
-
     }
 
 	function onDocumentMouseMove( event ) { // needs work
-
 		var mouse = { x: -1, y: -1 };
 		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-		raycaster.setFromCamera( mouse, camera );
-		var intersects = raycaster.intersectObjects( scene.children );
-
-/*
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
 		var projector = new THREE.Projector();
 		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
 		projector.unprojectVector( vector, camera );
 		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-		var intersects = raycaster.intersectObjects( scans.children );
-
+		var intersects = raycaster.intersectObjects( scans.children );	
+/*		
 		var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 		projector.unprojectVector( vector, camera );
 		var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() ),
 			intersects = ray.intersectObjects( scans.children );
-*/
-
+*/		
+		
 		if ( intersects.length > 0 ) {
 			if ( guiConfig.highlighting && intersected !== intersects[ 0 ].object ) {
 				if ( intersected ) { intersected.material.opacity = guiConfig.opacityDefault; }
@@ -330,8 +292,6 @@
 
 	function onKeyDown ( event ) {
 // http://www.webonweboff.com/tips/js/event_key_codes.aspx
-		event.preventDefault();
-
 		switch( event.keyCode ) {
 			case 37: /*<*/	scans.current--; if (scans.current < 0) {scans.current = hack.count;} brainApp.scanHighlight(scans.current); break;
 			case 39: /*>*/	scans.current++; if (scans.current > hack.count) {scans.current = 0;} brainApp.scanHighlight(scans.current); break;
@@ -345,7 +305,7 @@
 			scans.children[i].material.opacity = guiConfig.opacityDefault;
 			if (i === count) { scans.children[i].material.opacity = guiConfig.opacityHighlight; }
 		}
-	};
+	};	
 </script>
 </body>
 </html>
